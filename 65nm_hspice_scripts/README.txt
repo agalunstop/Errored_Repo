@@ -49,25 +49,18 @@ Next, we have to run the jobscript.txt script file present in the scripts
 folder. This has to be copied to the design folder and run from the design 
 folder to run the script python_utility2_hspice_2cycles_time0_65.py
 
-cd to the scripts directory and run the script “utility_python_top_level_65.py” on the vlsi lab machine- to generate the spice reference file. Three example usages are given inside the script itself (at the beginning)
-
-Now, copy your design folder to Pune CDAC cluster. I suggest that you do not copy the directory named ‘work’ created by modelsim (its size is huge and takes a long time to copy)
-
-If you want to run the spice simulations on VLSI lab machine then the
-65_nm_scripts folder should be used and python_utility2_hspice_2cycles_time0_65.py
-as hspice does not run on pune cluster.
-
-If you want to run the spice simulations on pune cluster then the folder
-65nm_cdac_scripts present inside current folder whould be copied to the pune
-server and script python_utility2_ngspice_yuva_65.py should be run in that
-folder. This will run ngspice.
-
-The jobscript should be run from the corresponding scripts folder
-
 Modify the parameters in the jobscript.txt. Before launching thousands of jobs, do a test-run with just few jobs- say 4 to 5. This text file will run the script “python_utility2_hspice_2cycles_time0_65.py" on the lab machine to run hspice
-
 
 Changes done to scripts:
 
 perl_spice_netlist_format_65.pl script updated- .ic statements: Oct 24 2014 
+
+Changes to be done:
+1) -v option to be added to change operating voltage in reference_spice and add
+to the jobscript to be taken by compare scripts to compare with correct values
+of voltages.
+
+2) jobscript to be generated using the script
+
+3) compare scripts to be modified to take the voltages as a parameter
 
