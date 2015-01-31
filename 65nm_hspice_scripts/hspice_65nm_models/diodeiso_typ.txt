@@ -1,0 +1,36 @@
+
+*-------------------------------------------------------------------------------
+.subckt dnwps plus minus
++ area = 0.22
++  pj = 1.88
++  mult = 1
++  tometer = 1e-06
++  mismatch = 1
+*-------------------------------------------------------------------------------
+* Nwell / Psub diode 
+* release = 1.0.d
+* Parameters for corner : typ
+*-------------------------------------------------------------------------------
+d1 plus minus dnwps  area='area*tometer*tometer*mult'
++  pj='pj*tometer*mult'
+
+* # Parameters file : "vclass.dds,v 1.42 2010/02/04 09:23:17"    
+
+.ends
+
+.model dnwps d level=6
++       trj=21                  imax=1000             cjorbot=0.0001138     
++   cjorsti=5.1e-10          cjorgat=2e-18            vbirbot=0.6           
++   vbirsti=0.58             vbirgat=0.8              phigbot=1.133         
++   phigsti=0.9              phiggat=1.117          idsatrbot=5.339e-07     
++ idsatrsti=4.18e-12       idsatrgat=0                xjunsti=3e-08         
++   xjungat=1.2e-07          csrhbot=1.184            csrhsti=1.893e-10     
++   csrhgat=0                ctatbot=1.184            ctatsti=1.893e-10     
++   ctatgat=0                cbbtbot=1e-19            cbbtsti=0             
++   cbbtgat=0              mefftatbot=0.25           mefftatsti=0.25          
++ mefftatgat=0.5               pbrbot=4                 pbrsti=4             
++    pbrgat=4               fbbtrbot=1e+09           fbbtrsti=1e+09         
++  fbbtrgat=1e+09             vbrbot=1001              vbrsti=1001          
++    vbrgat=1001           stfbbtbot=-0.001         stfbbtsti=-0.001        
++ stfbbtgat=-0.001             pbotj=0.295              pstij=0.305         
++     pgatj=0.5           
