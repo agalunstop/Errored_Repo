@@ -1,0 +1,25 @@
+###############################################################
+#!/bin/bash
+#PBS -l nodes=1:ppn=5
+#PBS -l walltime=00:00:10:00 
+#PBS -q batch
+#PBS -m bae  
+## Comma separated list of email address and mobile numbers 
+##PBS -M nanditha@ee.iitb.ac.in, 9769834234
+#PBS -r n 
+#PBS -V 
+##PBS -A <Project Name> # Account to be charged/debited
+#export I_MPI_JOB_CONTEXT=$PBS_JOBID
+#echo PBS JOB id is $PBS_JOBID
+#echo PBS_NODEFILE is $PBS_NODEFILE 
+#echo PBS_QUEUE is $PBS_QUEUE 
+#NPROCS=`wc -l < $PBS_NODEFILE` 
+#echo NPROCS is $NPROCS 
+#cd $PBS_O_WORKDIR 
+###PBS -e /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_check_new/error.txt
+###PBS -o /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_check_new/outfile.txt
+python python_utility2_hspice_2cycles_time0_65.py -m decoder_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_check_new -d sim_check_new -t 65 -n 3 --group 3 --clk 1000 --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts | tee log_sim
+#>/dev/null 2&>log_sim
+#python python_utility2_hspice_2cycles_time0_65.py -m b09 -p /home/users/nanditha/Documents/utility/65nm/b09 -t 65 -n 4 --group 4 --clk 350 -d b09 --scripts_path /home/users/nanditha/Documents/utility/65nm/scripts_run
+
+###############################################################

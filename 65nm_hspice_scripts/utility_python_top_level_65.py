@@ -131,6 +131,10 @@ time.sleep(5)
 os.system('perl perl_spice_netlist_format_65.pl -v %s/%s_modelsim.v  -s %s/pnr/op_data/%s_final_new.dspf  -c %s -t %s -m %s  -p %s' %(main_path,module,main_path,module,clkfreq,techn, module,main_path))
 print "***Done modifying the spice file to make it simulatable. File available in current directory reference_spice.sp\n"
 time.sleep(5)
-os.system('python python_create_jobscript_65.py -m %s -p %s -d %s -t %s -n %s --group %s --clk %s --proc_node %s --ppn %s --days %s --hrs %s --mins %s --script %s --path_here %s' %(module,extl_folder,design_folder,techn,num,group,clkfreq,nodes,ppn,days,hrs,mins,script,main_path))
+###original nanditha's implementation
+#os.system('python python_create_jobscript_65.py -m %s -p %s -d %s -t %s -n %s --group %s --clk %s --proc_node %s --ppn %s --days %s --hrs %s --mins %s --script %s' %(module,extl_folder,design_folder,techn,num,group,clkfreq,nodes,ppn,days,hrs,mins,script))
+
+###sonal's modification
+#os.system('python python_create_jobscript_65.py -m %s -p %s -d %s -t %s -n %s --group %s --clk %s --proc_node %s --ppn %s --days %s --hrs %s --mins %s --script %s --path_here %s' %(module,extl_folder,design_folder,techn,num,group,clkfreq,nodes,ppn,days,hrs,mins,script,main_path))
 
 

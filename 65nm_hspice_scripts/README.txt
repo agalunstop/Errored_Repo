@@ -36,6 +36,19 @@ by you in the script.
 
 ----------deck creation and simulation script--------
 
+The previous script must have created the following files in your design
+folder:
+drain_areas.txt
+glitch_CORE65GPSVT_selected_lib_vg.sp
+reference_spice.sp
+spice_results/headers.csv
+
+If any of the above files are missing then the script has not run properly.
+
+Next, we have to run the jobscript.txt script file present in the scripts
+folder. This has to be copied to the design folder and run from the design 
+folder to run the script python_utility2_hspice_2cycles_time0_65.py
+
 cd to the scripts directory and run the script “utility_python_top_level_65.py” on the vlsi lab machine- to generate the spice reference file. Three example usages are given inside the script itself (at the beginning)
 
 Now, copy your design folder to Pune CDAC cluster. I suggest that you do not copy the directory named ‘work’ created by modelsim (its size is huge and takes a long time to copy)
