@@ -189,8 +189,8 @@ elsif($tech==90)
   }
 elsif($tech==65)
   {
-    $vdd=1.26;
-    $idd=1.2;
+    $vdd=0.9;
+    $idd=0.4;
   }
 elsif($tech==45)
   {

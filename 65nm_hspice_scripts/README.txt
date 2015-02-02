@@ -46,8 +46,9 @@ spice_results/headers.csv
 If any of the above files are missing then the script has not run properly.
 
 Next, we have to run the jobscript.txt script file present in the scripts
-folder. This has to be copied to the design folder and run from the design 
-folder to run the script python_utility2_hspice_2cycles_time0_65.py
+folder. This jobscript is not presently created by the script thus has to be
+modified manually. This has to be copied to the design folder and run from the design 
+folder to run the script python_utility2_hspice_2cycles_time0_65.py 
 
 Modify the parameters in the jobscript.txt. Before launching thousands of jobs, do a test-run with just few jobs- say 4 to 5. This text file will run the script “python_utility2_hspice_2cycles_time0_65.py" on the lab machine to run hspice
 

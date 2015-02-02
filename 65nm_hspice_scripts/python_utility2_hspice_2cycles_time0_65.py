@@ -2,6 +2,8 @@
 #!/usr/bin/env python
 
 
+#Added -v option to specify operating voltage to pass to the comparison
+#scripts --sonal
 #Created a time0 spice_rtl_difference file will check the initial condition that is obtained vs expected- so that we can check if there is some error - July 2014
 #Modified the GNU_Parallel_hspice file to check if any deck is simulated using 'pseudo-transient method' - July 9th 2014
 #Creating multiple RTL.csv and RTL_2ndedge.csv files- as many as there are number of outer loops: June 15 2014
@@ -12,9 +14,9 @@
 #This version of the script has the facility of selecting the gate based on the area of the gate. This version of the script uses another script python_weighted_gateselection.py to pick the random gate based on its area: Nov 17 2013
 #Glitch insertion window is within the 2.5 cycles, and not the 6.5 cycles that is required for the case with intermediate FFs
 
-#Example usage: python python_utility2_hspice_2cycles_time0_65.py -m b09 -p /home/users/nanditha/Documents/utility/65nm/b09 -t 65 -n 4 --group 4 --clk 350 -d b09 --scripts_path /home/users/nanditha/Documents/utility/65nm/scripts_run
+#Example usage: python python_utility2_hspice_2cycles_time0_65.py -m b09 -p /home/users/nanditha/Documents/utility/65nm/b09 -t 65 -n 4 --group 4 --clk 350 --volt 1.1 -d b09 --scripts_path /home/users/nanditha/Documents/utility/65nm/scripts_run
 
-#Example usage: python python_utility2_hspice_2cycles_time0_65.py -m c880_clk_ipFF -p /home/users/nanditha/Documents/utility/65nm/c880 -t 65 -n 4 --group 4 --clk 350 -d c880 --scripts_path /home/users/nanditha/Documents/utility/65nm/scripts_run
+#Example usage: python python_utility2_hspice_2cycles_time0_65.py -m c880_clk_ipFF -p /home/users/nanditha/Documents/utility/65nm/c880 -t 65 -n 4 --group 4 --clk 350 --volt 1.1 -d c880 --scripts_path /home/users/nanditha/Documents/utility/65nm/scripts_run
 
 import optparse
 import re,os
@@ -31,6 +33,7 @@ from optparse import OptionParser
 parser = OptionParser("This script reads in the template spice file and the inputs to the script are listed as arguments below, which are all necessary arguments.\nAfter a previous script has copied the current working directory to a remote cluster, this script invokes several scripts inturn:\n1.perl_calculate_gates_clk.pl\n2.perl_calculate_drain.pl\n3.deckgen_remote_seed.pl\n4.python_GNUparallel_ngspice_remote.py\n5.python_compare_remote_seed.py\n6.python_count_flips_remote_seed.py\n\nThe tasks of these scripts will be described in the help section of the respective scripts. The current script needs pnr/reports/5.postRouteOpt_mult/mult_postRoute.slk as an input. The current script will calculate the number of gates in the design(spice) file, pick a random gate, calculate the number of distinct drains for this gate and pick a drain to introduce glitch it. It then invokes deckgen.pl to modify the template spice file to introduce the glitched version of the gate in the spice file. The deckgen creates multiple spice files which will contain different input conditions since they are generated at different clk cycles.\nThe python_GNUparallel_ngspice_remote.py will then distribute these spice files across the different machines in the cluster and simulate these decks using ngspice. The results are csv files which contain output node values after spice simulation.\nThe results are then concatenated into one file and compared against the expected reference outputs that were obtained by the RTL simulation. If the results match, then it means that there was no bit-flip, so a 0 is reported, else a 1 is reported for a bit-flip. The number of flips in a single simulation is counted. Finally, if there are multiple flips given atleast one flip, it is reported as a percentage.\nAuthor:Nanditha Rao(nanditha@ee.iitb.ac.in)\n")
 
 parser.add_option("-m", "--mod",dest='module', help='Enter the entity name(vhdl) or module name (verilog)')
+parser.add_option("-v", "--volt",dest='volt', help='Enter the operating voltage')
 parser.add_option("-n", "--num",dest='num',  help='Enter the number of spice decks to be generated and simulated')
 parser.add_option("-p", "--path", dest="path",help="Enter the ENTIRE path to your design folder (your working dir)- either this machine or remote machine.")
 parser.add_option("-d", "--design", dest="design_folder",help="Enter the name of your design folder")
@@ -43,6 +46,7 @@ parser.add_option("-e", "--scripts_path", dest="scripts_path",help="Enter the EN
 
 
 module=options.module
+volt=options.volt
 num=options.num
 path=options.path
 design_folder=options.design_folder
@@ -330,13 +334,13 @@ for loop in range(start_loop, (num_of_loops+1)):
 	#Might need to execute these last 3 in a loop till the results are acceptable
 	
 	print "Comparing the RTL and spice outputs at the 2nd falling edge (3rd rising edge)\n"
-	os.system('python python_compare_3rd_edge_65.py -m %s -f %s -n %s -t %s -l %d' %(module,path,num_at_a_time,tech,loop))
+	os.system('python python_compare_3rd_edge_65.py -m %s -f %s -n %s -t %s -l %d -v %s' %(module,path,num_at_a_time,tech,loop,volt))
 
 	print "Comparing the RTL and spice outputs at the 2nd rising edge \n"
-	os.system('python python_compare_2nd_edge_65.py -m %s -f %s -n %s -t %s -l %d' %(module,path,num_at_a_time,tech,loop))
+	os.system('python python_compare_2nd_edge_65.py -m %s -f %s -n %s -t %s -l %d -v %s' %(module,path,num_at_a_time,tech,loop,volt))
 	
 	print "Comparing the RTL and spice outputs at the time=0 \n"
-	os.system('python python_compare_time0_65.py -m %s -f %s -n %s -t %s -l %d' %(module,path,num_at_a_time,tech,loop))
+	os.system('python python_compare_time0_65.py -m %s -f %s -n %s -t %s -l %d -v %s' %(module,path,num_at_a_time,tech,loop,volt))
 
 	
 #For testing out new glitch files (afterdeleting process if at each echo statement). comment this out in the final run, else it will copy ALL spice files and consume lot of disk space

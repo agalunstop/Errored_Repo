@@ -16,6 +16,7 @@ parser = OptionParser('This script will create a jobscript.txt file in the curre
 
 
 parser.add_option("-m", "--mod",dest='module', help='Enter the entity name(vhdl) or module name (verilog)')
+parser.add_option("-v", "--volt",dest='volt', help='Enter the operating voltage')
 parser.add_option("-n", "--num",dest='num',  help='Enter the number of spice decks to be generated and simulated')
 parser.add_option("-p", "--path", dest="path",help="Enter the ENTIRE path to your design folder (your working dir)- on the pune cdac remote machine on which the jobs will be executed. Enter the <entire_path>/<design_folder_name>")
 parser.add_option("-d", "--design", dest="design_folder",help="Enter the name of your design folder")
@@ -34,6 +35,7 @@ parser.add_option("-e", "--scripts_path", dest="scripts_path",help="Enter the EN
 
 (options, args) = parser.parse_args()
 module=options.module
+volt=options.volt
 num=options.num
 path=options.path
 design_folder=options.design_folder
@@ -61,19 +63,19 @@ fw.write('#PBS -q batch\n#PBS -m bae  \n')
 fw.write('## Comma separated list of email address and mobile numbers \n##PBS -M nanditha@ee.iitb.ac.in, 9769834234\n')
 
 fw.write('#PBS -r n \n#PBS -V \n##PBS -A <Project Name> # Account to be charged/debited\n')
-fw.write('export I_MPI_JOB_CONTEXT=$PBS_JOBID\n')
-fw.write('echo PBS JOB id is $PBS_JOBID\n')
+fw.write('#export I_MPI_JOB_CONTEXT=$PBS_JOBID\n')
+fw.write('#echo PBS JOB id is $PBS_JOBID\n')
 
-fw.write('echo PBS_NODEFILE is $PBS_NODEFILE \n')
-fw.write('echo PBS_QUEUE is $PBS_QUEUE \n')
-fw.write('NPROCS=`wc -l < $PBS_NODEFILE` \n')
+fw.write('#echo PBS_NODEFILE is $PBS_NODEFILE \n')
+fw.write('#echo PBS_QUEUE is $PBS_QUEUE \n')
+fw.write('#NPROCS=`wc -l < $PBS_NODEFILE` \n')
 
-fw.write('echo NPROCS is $NPROCS \n')
+fw.write('#echo NPROCS is $NPROCS \n')
 
-fw.write('cd $PBS_O_WORKDIR \n')
+fw.write('#cd $PBS_O_WORKDIR \n')
 fw.write('###PBS -e %s/error.txt\n###PBS -o %s/outfile.txt\n' %(path,path))
 
-fw.write('python %s/%s -m %s -p %s -d %s -t %s -n %s --group %s --clk %s --scripts_path %s >/dev/null 2&>1\n' %(scripts_path,script,module,path,design_folder,tech,num,num_at_a_time,clk,scripts_path))
+fw.write('python %s/%s -m %s -p %s -d %s -t %s -n %s -v %s --group %s --clk %s --scripts_path %s >/dev/null 2&>log_%s\n' %(scripts_path,script,module,path,design_folder,tech,num,volt,num_at_a_time,clk,scripts_path,design_folder))
 
 fw.write('###############################################################\n')
 

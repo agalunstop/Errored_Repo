@@ -1,11 +1,13 @@
 
-#Example: perl perl_spice_netlist_format_65.pl -v ../c432/c432_modelsim.v -s ../c432/pnr/op_data/c432_final_new.dspf -c 300 -t 65 -m c432 -p ../c432
+#Example: perl perl_spice_netlist_format_65.pl -v ../c432/c432_modelsim.v -s ../c432/pnr/op_data/c432_final_new.dspf -c 300 -t 65 -m c432 -p ../c432 -v 1.1
 
-#Example: perl perl_spice_netlist_format_65.pl -v ../c432/c432_clk_ipFF_modelsim.v -s ../c432/pnr/op_data/c432_clk_ipFF_final_new.dspf -c 350 -t 65 -m c432_clk_ipFF -p ../c432
+#Example: perl perl_spice_netlist_format_65.pl -v ../c432/c432_clk_ipFF_modelsim.v -s ../c432/pnr/op_data/c432_clk_ipFF_final_new.dspf -c 350 -t 65 -m c432_clk_ipFF -p ../c432 -v 0.9
 
 #clk frequency in MHz
 
 #Modifications:
+# Added -v option to pass operating voltage from top level script 
+
 #Automated the flip-flop type selection in meas statements and module instantiation of .ic statement (q_reg) for ISCAS and non-ISCAS benchmarks: Oct 15 2014 
 #'Q' and 'QN' nodes in meas tran statements have been automated: Oct 15 2014
 # .ic statements for all flip-flop types automated: Oct 14 2014
@@ -120,6 +122,7 @@ END
 
 GetOptions( "v|verilog=s"=>\$vlog,
             "s|spice=s"=>\$spc,
+            "o|volt=s"=>\$volt,
 	    "c|clk=s"=>\$clk,
 	    "t|tech=s"=>\$tech,
 	    "m|module=s"=>\$module,
@@ -171,37 +174,44 @@ $vdd=1.8;
 $idd=2.2;
 if($tech==180)
   {
-    $vdd=1.8;
+    if($volt=="") {$vdd=1.8;}
+    else {$vdd=$volt;}
     $idd=2.2;
   }
 elsif($tech==130)
   {
-    $vdd=1.5;
+    if($volt=="") {$vdd=1.5;}
+    else {$vdd=$volt;}
     $idd=1.8;
   }
 elsif($tech==90)
   {
-    $vdd=1.2;
+    if($volt=="") {$vdd=1.2;}
+    else {$vdd=$volt;}
     $idd=1.5;
   }
 elsif($tech==65)
   {
-    $vdd=1.26;
-    $idd=1.2;
+    if($volt=="") {$vdd=1.26;}
+    else {$vdd=$volt;}
+    $idd=0.4;
   }
 elsif($tech==45)
   {
-    $vdd=1.0;
+    if($volt=="") {$vdd=1.0;}
+    else {$vdd=$volt;}
     $idd=1.0;
   }
 elsif($tech==32)
   {
-    $vdd=0.9;
+    if($volt=="") {$vdd=0.9;}
+    else {$vdd=$volt;}
     $idd=0.8;
   }
 elsif($tech==22)
   {
-    $vdd=0.8;
+    if($volt=="") {$vdd=0.8;}
+    else {$vdd=$volt;}
     $idd=0.6;
   }
 

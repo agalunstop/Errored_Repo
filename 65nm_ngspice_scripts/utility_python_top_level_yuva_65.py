@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 
-#Example usage: python utility_python_top_level_yuva_65.py -p /home/users/nanditha/Documents/utility/65nm/b11 --rtl=/home/users/nanditha/Documents/utility/65nm/b11/b11.vhd --mod=b11 --test=/home/users/nanditha/Documents/utility/65nm/b11/test_b11.vhd --tb_mod=test_b11 --clk=350 --run=100us --design=b11 --tech=65 --num=10 --group 10 --extl=/home/external/iitb/nanditha/simulations/65nm/b11  --proc_node 1 --ppn 5 --days 00 --hrs 00 --mins 10 --script python_utility2_ngspice_yuva_65.py --scripts_path /home/external/iitb/nanditha/simulations/65nm/scripts_run
+#Example usage: python utility_python_top_level_yuva_65.py -p /home/users/nanditha/Documents/utility/65nm/b11 --rtl=/home/users/nanditha/Documents/utility/65nm/b11/b11.vhd --mod=b11 --test=/home/users/nanditha/Documents/utility/65nm/b11/test_b11.vhd --tb_mod=test_b11 --clk=350 --run=100us --design=b11 --tech=65 -v=1.1 --num=10 --group 10 --extl=/home/external/iitb/nanditha/simulations/65nm/b11  --proc_node 1 --ppn 5 --days 00 --hrs 00 --mins 10 --script python_utility2_ngspice_yuva_65.py --scripts_path /home/external/iitb/nanditha/simulations/65nm/scripts_run
 
 
-#Example usage: python utility_python_top_level_yuva_65.py -p /home/users/nanditha/Documents/utility/65nm/LFSR --rtl=/home/users/nanditha/Documents/utility/65nm/LFSR/lfsr.vhd --mod=lfsr --test=/home/users/nanditha/Documents/utility/65nm/LFSR/test_lfsr.vhd --tb_mod=lfsr_tb --clk=400 --run=100us --design=LFSR --tech=65 --num=10 --group 10 --extl=/home/external/iitb/nanditha/simulations/65nm/LFSR  --proc_node 1 --ppn 5 --days 00 --hrs 00 --mins 10 --script python_utility2_ngspice_yuva_65.py  --scripts_path /home/external/iitb/nanditha/simulations/65nm/scripts_run
+#Example usage: python utility_python_top_level_yuva_65.py -p /home/users/nanditha/Documents/utility/65nm/LFSR --rtl=/home/users/nanditha/Documents/utility/65nm/LFSR/lfsr.vhd --mod=lfsr --test=/home/users/nanditha/Documents/utility/65nm/LFSR/test_lfsr.vhd --tb_mod=lfsr_tb --clk=400 --run=100us --design=LFSR --tech=65 -v=1.1 --num=10 --group 10 --extl=/home/external/iitb/nanditha/simulations/65nm/LFSR  --proc_node 1 --ppn 5 --days 00 --hrs 00 --mins 10 --script python_utility2_ngspice_yuva_65.py  --scripts_path /home/external/iitb/nanditha/simulations/65nm/scripts_run
 
 
-#Example usage: python utility_python_top_level_yuva_65.py -p /home/users/nanditha/Documents/utility/65nm/c1908 --rtl=/home/users/nanditha/Documents/utility/65nm/c1908/c1908_clk_ipFF.v --mod=c1908_clk_ipFF --test=/home/users/nanditha/Documents/utility/65nm/c1908/test_c1908.v --tb_mod=test_c1908 --clk=350 --run=100us --design=c1908 --tech=65 --num=10 --group 10 --extl=/home/external/iitb/nanditha/simulations/65nm/c1908  --proc_node 1 --ppn 5 --days 00 --hrs 00 --mins 3 --script python_utility2_ngspice_yuva_65.py --scripts_path /home/external/iitb/nanditha/simulations/65nm/scripts_run
+#Example usage: python utility_python_top_level_yuva_65.py -p /home/users/nanditha/Documents/utility/65nm/c1908 --rtl=/home/users/nanditha/Documents/utility/65nm/c1908/c1908_clk_ipFF.v --mod=c1908_clk_ipFF --test=/home/users/nanditha/Documents/utility/65nm/c1908/test_c1908.v --tb_mod=test_c1908 --clk=350 --run=100us --design=c1908 --tech=65 -v=1.1 --num=10 --group 10 --extl=/home/external/iitb/nanditha/simulations/65nm/c1908  --proc_node 1 --ppn 5 --days 00 --hrs 00 --mins 3 --script python_utility2_ngspice_yuva_65.py --scripts_path /home/external/iitb/nanditha/simulations/65nm/scripts_run
 
 
 #Modifications to the script:
+#added -v option to pass voltage from top level to all scripts
 #The .ic for the different types of flipf-flops is currently being done manually in the reference.sp file. The flip-flops and its corresponding initialisation nodes are written in the help of NetLstfrmt.pl script
 
 #Absolute paths introduced everywhere in the script, so that they can be run from one directory and no need of duplicating the scripts in all directories: June 25 2014
@@ -35,6 +36,7 @@ parser = OptionParser('This is the top level script for this utility which calcu
 
 parser.add_option("-v","--rtl", help='Enter the ENTIRE path of the RTL (verilog or vhdl) including the RTL file name',dest='rtl')
 parser.add_option("-m","--mod", help='Enter the entity name(vhdl) or module name (verilog)',dest='module')
+parser.add_option("-o","--volt", help='Enter the operating voltage',dest='volt')
 
 parser.add_option("-p","--pmain", help='Enter the entity name(vhdl) or module name (verilog)',dest='path')
 #########################################################################
@@ -71,6 +73,7 @@ clkfreq=options.clkfreq
 test_path=options.test_path
 test_module=options.test_module
 runtime=options.runtime
+volt=options.volt
 ########################
 
 
@@ -90,7 +93,7 @@ mins=options.mins
 script=options.script
 scripts_path=options.scripts_path
 
-
+'''
 #Example usage: python python1_read_RTL_syn_pnr.py -f decoder.vhd -m decoder_behav_pnr -clk 900
 os.system('python python_read_RTL_syn_pnr_65.py -f %s -m %s -c %s -p %s' %(rtl,module,clkfreq,main_path))
 
@@ -138,6 +141,6 @@ time.sleep(5)
 os.system('perl perl_spice_netlist_format_noR_65.pl -v %s/%s_modelsim.v  -s %s/pnr/op_data/%s_final_new.dspf  -c %s -t %s -m %s  -p %s' %(main_path,module,main_path,module,clkfreq,techn, module,main_path))
 print "***Done modifying the spice file to make it simulatable. File available in current directory reference_spice.sp\n"
 time.sleep(5)
-
-os.system('python python_create_jobscript_65.py -m %s -p %s -d %s -t %s -n %s --group %s --clk %s --proc_node %s --ppn %s --days %s --hrs %s --mins %s --script %s --path_here %s --scripts_path %s' %(module,extl_folder,design_folder,techn,num,group,clkfreq,nodes,ppn,days,hrs,mins,script,main_path,scripts_path))
+'''
+os.system('python python_create_jobscript_65.py -m %s -p %s -d %s -t %s -n %s -v %s --group %s --clk %s --proc_node %s --ppn %s --days %s --hrs %s --mins %s --script %s --path_here %s --scripts_path %s' %(module,extl_folder,design_folder,techn,num,volt,group,clkfreq,nodes,ppn,days,hrs,mins,script,main_path,scripts_path))
 

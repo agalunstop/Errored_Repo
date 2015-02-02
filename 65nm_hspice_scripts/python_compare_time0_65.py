@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
+#added -v parameter to pass the voltage value from top script
 #Commented out copying glitch_reports.csv. Introduced an option of backing up hspice_deck*.sp or deck*.sp: June 23 2014
 #Introduced RTL_time0.csv - Jul 10 2014
 #Modified RTL.csv to RTL_<loop_var>.csv.. RTL_1.csv, RTL_2.csv: June 15 2014
 #Changed the #column iteration number from range(5) to range(6), since the drain number is also added: Feb 11 2014
 #Compare results of spice and RTL, creates difference files and validation files for each run. Compare the 3rd rising edge in Verilog with the 2nd falling edge in spice (just an optimisation in spice, to save simulating another extra half cycle)
 
-#Example usage: python python_compare_time0_65.py -m decoder_op_ip -f /home/external/iitb/nanditha/simulations/decoder_ip_opFF_rise -n 10 -t 180 -l 1
+#Example usage: python python_compare_time0_65.py -m decoder_op_ip -v 1.1 -f /home/external/iitb/nanditha/simulations/decoder_ip_opFF_rise -n 10 -t 180 -l 1
 
 import optparse
 import re,os
@@ -22,6 +23,7 @@ from optparse import OptionParser
 parser = OptionParser('This script reads in the <path>/spice_results/final_results_spice_outputs_time0_%d.csv (spice output Flip-flop values at time=0- initial condition) and <path>/<module>_reference_out/RTL_time0.csv (RTL reference output values) to compare the spice simulation (with glitch) output with the original RTL simulation (no glitch) output. Two files are written out:\n1. <path>/spice_results/spice_rtl_difference_time0_%d.csv and\n2.<path>/spice_results/spice_rtl_diff_testing_time0_%d.csv.\n Both contain essentially same data but the _testing file has both spice and RTL outputs so that the result in the other file can be verified by us.\nIt then counts the number of flips- single/double etc., each time this script is executed (for a group of simulations) and then backs up few decks randomly for each case- no_flip case, single,double flip and triple flip case. These decks are saved in backup_spice_decks_time0 folder and a separate folder is created for each of the no flip, single, double flips etc.,\nAuthor:Nanditha Rao(nanditha@ee.iitb.ac.in)\n')
 
 parser.add_option("-m", "--mod",dest='module', help='Enter the entity name(vhdl) or module name (verilog)')
+parser.add_option("-v", "--volt",dest='volt', help='Enter the operating voltage')
 parser.add_option("-f", "--folder", dest="path",help="Enter the ENTIRE path to your design folder(your working dir)- either on this machine or remote machine ")
 parser.add_option("-n", "--num",dest='number', help='Enter the number of spice outputs to be compared to RTL outputs')
 parser.add_option("-t", "--tech",dest='tech', help='Enter the technology node-for eg., For 180nm, enter 180')
@@ -32,6 +34,7 @@ parser.add_option("-l", "--outloop",dest='outloop', help='This is the number of 
 
 
 module=options.module
+volt=options.volt
 path=options.path
 num=options.number #num=num_at_a_time
 tech=options.tech
@@ -40,19 +43,41 @@ outloop=options.outloop
 
 
 if (tech == '180'):
-	vdd_val=1.8
+	if (volt == ''):
+		vdd_val=1.8
+	else:
+		vdd_val=volt
 elif (tech == '130'):
-	vdd_val=1.5
+	if (volt == ''):
+		vdd_val=1.5
+	else:
+		vdd_val=volt
 elif (tech == '90'):
-	vdd_val=1.2
+	if (volt == ''):
+		vdd_val=1.2
+	else:
+		vdd_val=volt
 elif (tech == '65'):
-	vdd_val=1.0
+	if (volt == ''):
+		vdd_val=1.0
+	else:
+		vdd_val=volt
 elif (tech == '45'):
-	vdd_val=1.0
+	if (volt == ''):
+		vdd_val=1.0
+	else:
+		vdd_val=volt
 elif (tech == '32'):
-	vdd_val=0.9
+	if (volt == ''):
+		vdd_val=0.9
+	else:
+		vdd_val=volt
 elif (tech == '22'):
-	vdd_val=0.8
+	if (volt == ''):
+		vdd_val=0.8
+	else:
+		vdd_val=volt
+
 
 print "vdd value is ",vdd_val
 
