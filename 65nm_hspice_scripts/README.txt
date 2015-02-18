@@ -65,3 +65,9 @@ of voltages.
 
 3) compare scripts to be modified to take the voltages as a parameter
 
+
+-------------------------------------------------------------------------
+Other information:
+
+The operating voltage used for synthesis/pnr can bee seen in
+synthesis/reports/power.rpt file

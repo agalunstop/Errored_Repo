@@ -194,7 +194,7 @@ elsif($tech==65)
   {
     if($volt=="") {$vdd=1.26;}
     else {$vdd=$volt;}
-    $idd=0.4;
+    $idd=0;
   }
 elsif($tech==45)
   {

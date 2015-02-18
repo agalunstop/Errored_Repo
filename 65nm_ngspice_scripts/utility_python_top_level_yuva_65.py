@@ -93,7 +93,6 @@ mins=options.mins
 script=options.script
 scripts_path=options.scripts_path
 
-'''
 #Example usage: python python1_read_RTL_syn_pnr.py -f decoder.vhd -m decoder_behav_pnr -clk 900
 os.system('python python_read_RTL_syn_pnr_65.py -f %s -m %s -c %s -p %s' %(rtl,module,clkfreq,main_path))
 
@@ -141,6 +140,5 @@ time.sleep(5)
 os.system('perl perl_spice_netlist_format_noR_65.pl -v %s/%s_modelsim.v  -s %s/pnr/op_data/%s_final_new.dspf  -c %s -t %s -m %s  -p %s' %(main_path,module,main_path,module,clkfreq,techn, module,main_path))
 print "***Done modifying the spice file to make it simulatable. File available in current directory reference_spice.sp\n"
 time.sleep(5)
-'''
 os.system('python python_create_jobscript_65.py -m %s -p %s -d %s -t %s -n %s -v %s --group %s --clk %s --proc_node %s --ppn %s --days %s --hrs %s --mins %s --script %s --path_here %s --scripts_path %s' %(module,extl_folder,design_folder,techn,num,volt,group,clkfreq,nodes,ppn,days,hrs,mins,script,main_path,scripts_path))
 

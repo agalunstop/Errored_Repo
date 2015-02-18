@@ -163,17 +163,17 @@ clk_period = (1.0/float(clk))*(0.000001) #for the MHz
 print "\nclk is ",clk
 print "\nClk_period: ", clk_period
 ##This is to write out the processor nodes in a file, to be used by GNU Parallel later
+'''
 os.system('cat $PBS_NODEFILE > %s/nodes.txt' %path)
 print "PBS NODEFILE contents....written to nodes.txt\n"
 #time.sleep(3)
-
 
 os.system('python %s/python_ssh_addr_yuva_65.py -p %s' %(scripts_path,path))
 os.system('cat %s/sshmachines.txt' %path)
 print "Check contents of sshmachines.txt file....\n"
 #time.sleep(10)
 ######################################################################################################
-
+'''
 os.system("perl %s/perl_calculate_gates_clk_65.pl -s %s/reference_spice.sp  -r %s/%s_reference_out/tool_reference_out.txt -m %s -f %s" %(scripts_path,path,path,module,module,path))
 
 time.sleep(2)
@@ -383,6 +383,7 @@ gate_glitch_captured_multiple, gate_glitch_captured =  gate_strike_taxonomy(path
 print "\nDoing the taxonomy for FFs\n"
 os.system('python  %s/python_FF_strike_taxonomy_65.py  -p %s -m %s --gl_multiple %d --gl_capture %d' %(scripts_path,path,module,gate_glitch_captured_multiple,gate_glitch_captured)) 
 
-
+'''
 print "\nCombining the pdf reports\n"
 os.system('python %s/python_combine_pdfs_yuva_65.py -p %s/spice_results -m %s' %(scripts_path,path,module))
+'''

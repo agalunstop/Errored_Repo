@@ -9,14 +9,15 @@
 #PBS -r n 
 #PBS -V 
 ##PBS -A <Project Name> # Account to be charged/debited
-export I_MPI_JOB_CONTEXT=$PBS_JOBID
-echo PBS JOB id is $PBS_JOBID
-echo PBS_NODEFILE is $PBS_NODEFILE 
-echo PBS_QUEUE is $PBS_QUEUE 
-NPROCS=`wc -l < $PBS_NODEFILE` 
-echo NPROCS is $NPROCS 
-cd $PBS_O_WORKDIR 
-###PBS -e /home/external/iitb/nanditha/simulations/65nm/b03/error.txt
-###PBS -o /home/external/iitb/nanditha/simulations/65nm/b03/outfile.txt
-python /home/external/iitb/nanditha/simulations/65nm/b03/python_utility3_ngspice_yuva_65.py -m b03 -p /home/external/iitb/nanditha/simulations/65nm/b03 -d b03 -t 65 -n 10 --group 10 --clk 400 >/dev/null 2&>1
+#export I_MPI_JOB_CONTEXT=$PBS_JOBID
+#echo PBS JOB id is $PBS_JOBID
+#echo PBS_NODEFILE is $PBS_NODEFILE 
+#echo PBS_QUEUE is $PBS_QUEUE 
+#NPROCS=`wc -l < $PBS_NODEFILE` 
+#echo NPROCS is $NPROCS 
+#cd $PBS_O_WORKDIR 
+###PBS -e /home/external/iitb/sonalg/Fault_Tolerance/sim_65/sim_decoder_380_0.7_yuva/error.txt
+###PBS -o /home/external/iitb/sonalg/Fault_Tolerance/sim_65/sim_decoder_380_0.7_yuva/outfile.txt
+python /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_ngspice_scripts/python_utility2_ngspice_yuva_65.py -m decoder_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_380_0.7_yuva -d sim_decoder_380_0.7_yuva -t 65 -n 5 -v 0.7 --group 1 --clk 310 --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_ngspice_scripts | tee log_380_0.7_yuva
+# >/dev/null 2&>log_sim_decoder_380_0.7_yuva
 ###############################################################
