@@ -1,0 +1,13 @@
+#!/bin/bash
+#python python_read_RTL_syn_pnr_65.py -f /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_0.55_0.4/decoder_op_ip.vhd -m decoder_op_ip -c 400 -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_0.55_0.4
+script_dir="/home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts"
+design_dir="/home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1"
+module_name="decoder_op_ip"
+loop_no="1"
+deck_no="1"
+if [ ! -d "$design_dir/spice_decks_$loop_no" ]; then
+	mkdir $design_dir/spice_decks_$loop_no
+	touch $design_dir/spice_decks_$loop_no/deck_$deck_no.sp
+  # Control will enter here if $DIRECTORY doesn't exist.
+fi
+perl $script_dir/perl_deckgen_65.pl -s $design_dir/reference_spice.sp  -r $design_dir/$module_name\_reference_out/tool_reference_out.txt -v 0.9 --curr 0.4 --clk 500 -n $deck_no -m $module_name -f $design_dir -g 12 -d 6 -c 9190 -i 7.221749e-10 -o $loop_no

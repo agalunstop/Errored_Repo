@@ -1,0 +1,76 @@
+#!/bin/bash
+function run 
+#parameters : $volt $freq $no_of_sim
+{
+	python python_utility2_hspice_2cycles_time0_65.py -m decoder_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1 -d sim_decoder_1000_1 -t 65 -n $3 --group 3 --clk $2 --volt $1 --curr 0 --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts | tee log_sim_$2\_$1
+#	echo "Probability of atleast one flip is: 0.1" > log_sim_$2\_$1
+	return 1
+}
+#initialisation
+logfile='log_sanity'
+resultfile='result_sanity'
+volt_max=1.0
+volt_min=0.3
+freqmax=6
+freqmin=0
+resolution=1
+no_of_sim=999
+rep_sim=1
+`\rm $logfile`
+#binary search algo
+volt=0.5
+freqpres=$freqmax
+while [ 1 ]
+do
+echo running $no_of_sim simulations at voltage = $volt frequency = $freqpres | tee -a $logfile
+run $volt $freqpres $no_of_sim
+sleep 2
+if [ -f log_sim_$freqpres\_$volt ]; then
+#extracting the number of flips from log files
+	echo Checking log_sim_$freqpres\_$volt for flips	| tee -a $logfile
+	result=($(grep 'Probability of atleast one flip is' log_sim_$freqpres\_$volt | cut -d " " -f 7-))
+	echo Probability of atleast one flip is $result | tee -a $logfile
+	length=${#result[@]}
+	if [ $length -eq 0 ]; then
+		echo '#####Error in simulation######' | tee -a $logfile
+		fail=1
+		break
+	fi
+	for ((i = 0; i != length; i++)); do
+		if [ ${result[i]} = '0.0' ];then
+			fail=0
+		else
+			fail=1
+		fi
+	done
+	if [ $fail = 0 ]; then
+#The simulations passed and hence increase present frequency
+		echo voltage = $volt freq = $freqpres passed for $no_of_sim simulations | tee -a $logfile
+		freqmin=$freqpres
+		freqdiff=$(($freqmax-$freqmin))
+		echo difference between frequencies is $freqdiff | tee -a $logfile
+		if [ $freqdiff -gt $resolution ];then
+			freqpres=$(($(($freqmax+$freqmin))/2))
+		else
+			echo Final frequency for $volt is $freqpres | tee -a $resultfile
+			break
+		fi
+	else
+#The simulations failed and hence decrease present frequency
+		echo failed for $freqpres at $volt | tee -a $logfile
+		freqmax=$freqpres
+		freqdiff=$(($freqmax-$freqmin))
+		echo difference between frequencies is $freqdiff | tee -a $logfile
+		if [ $freqdiff -gt $resolution ]; then
+			freqpres=$(($(($freqmax+$freqmin))/2))
+			echo New frequency is $freqpres | tee -a $logfile
+		else
+			echo Not passed any frequency for $volt, last freq used was $freqpres | tee -a $resultfile
+			break
+		fi
+	fi
+else
+	echo simulation failed 
+fi
+done
+
