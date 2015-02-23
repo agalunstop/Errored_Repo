@@ -172,49 +172,54 @@ open(FF_TYPE,">$path/flipflop_names.txt")||die("unable to open file : $!");
 #Definig the technology dependent parameters
 $vdd=1.8;
 $idd=2.2;
-if($tech==180)
-  {
-    if($volt=="") {$vdd=1.8;}
-    else {$vdd=$volt;}
-    $idd=2.2;
-  }
-elsif($tech==130)
-  {
-    if($volt=="") {$vdd=1.5;}
-    else {$vdd=$volt;}
-    $idd=1.8;
-  }
-elsif($tech==90)
-  {
-    if($volt=="") {$vdd=1.2;}
-    else {$vdd=$volt;}
-    $idd=1.5;
-  }
-elsif($tech==65)
-  {
-    if($volt=="") {$vdd=1.26;}
-    else {$vdd=$volt;}
-    $idd=0;
-  }
-elsif($tech==45)
-  {
-    if($volt=="") {$vdd=1.0;}
-    else {$vdd=$volt;}
-    $idd=1.0;
-  }
-elsif($tech==32)
-  {
-    if($volt=="") {$vdd=0.9;}
-    else {$vdd=$volt;}
-    $idd=0.8;
-  }
-elsif($tech==22)
-  {
-    if($volt=="") {$vdd=0.8;}
-    else {$vdd=$volt;}
-    $idd=0.6;
-  }
+##### this part commented because vdd and idd are now inserted in the final deck using deckgen script. reference.spice doesn't 
+##### have any operating voltage or injected current
 
+#if($tech==180)
+#  {
+#    if($volt=="") {$vdd=1.8;}
+#    else {$vdd=$volt;}
+#    $idd=2.2;
+#  }
+#elsif($tech==130)
+#  {
+#    if($volt=="") {$vdd=1.5;}
+#    else {$vdd=$volt;}
+#    $idd=1.8;
+#  }
+#elsif($tech==90)
+#  {
+#    if($volt=="") {$vdd=1.2;}
+#    else {$vdd=$volt;}
+#    $idd=1.5;
+#  }
+#elsif($tech==65)
+#  {
+#    if($volt=="") {$vdd=1.26;}
+#    else {$vdd=$volt;}
+#    $idd=0;
+#  }
+#elsif($tech==45)
+#  {
+#    if($volt=="") {$vdd=1.0;}
+#    else {$vdd=$volt;}
+#    $idd=1.0;
+#  }
+#elsif($tech==32)
+#  {
+#    if($volt=="") {$vdd=0.9;}
+#    else {$vdd=$volt;}
+#    $idd=0.8;
+#  }
+#elsif($tech==22)
+#  {
+#    if($volt=="") {$vdd=0.8;}
+#    else {$vdd=$volt;}
+#    $idd=0.6;
+#  }
+
+$vdd = "##op_voltage##";
+$idd = "##injected_curr##";
 #including the library files
 print SIM "****Template spice file***"."\n\n";
 print SIM ".include  ../hspice_glitch_CORE65GPSVT_selected_lib_vg.sp"."\n";
@@ -441,18 +446,18 @@ print SIM "\n\n******Simulation parameters*****"."\n\n";
 
 #including the user defined clock information
 
-$clk_period = (1/$clk)*(0.000001);
-
-#$sim_time=6.5*$clk_period;#defining simulation time
-#$fall_from=(6*$clk_period); #defining fall time window
-#$fall_to= 6.2*$clk_period;
-
-$sim_time=2.5*$clk_period;#defining simulation time
-$fall_from=(2*$clk_period); #defining fall time window
-$fall_to= ($fall_from + 50e-12);
-
-$rise_from_2nd=(1.5*$clk_period); #defining fall time window
-$rise_to_2nd= ($rise_from_2nd + 50e-12);
+#$clk_period = (1/$clk)*(0.000001);
+#
+##$sim_time=6.5*$clk_period;#defining simulation time
+##$fall_from=(6*$clk_period); #defining fall time window
+##$fall_to= 6.2*$clk_period;
+#
+#$sim_time=2.5*$clk_period;#defining simulation time
+#$fall_from=(2*$clk_period); #defining fall time window
+#$fall_to= ($fall_from + 50e-12);
+#
+#$rise_from_2nd=(1.5*$clk_period); #defining fall time window
+#$rise_to_2nd= ($rise_from_2nd + 50e-12);
 
 #$half_clk_period=$clk_period/2;
 #$double_clk_period=2*$clk_period;
@@ -464,13 +469,13 @@ $rise_to_2nd= ($rise_from_2nd + 50e-12);
 
 print SIM "****Param definitions***"."\n";
 
-print SIM ".param clk_period= '(1/$clk)*(0.000001)' \n"; 
+print SIM ".param clk_period= '(1/##clk_period##)*(0.000001)' \n"; 
 print SIM "+half_clk_period= '(clk_period/2)'\n";
 print SIM "+double_clk_period= '(clk_period*2)'\n\n";
 
 
-print SIM ".param fall_from_value=$fall_from\n"; 
-print SIM "+ fall_to_value=$fall_to\n\n";
+print SIM ".param fall_from_value=##fall_from##\n"; 
+print SIM "+ fall_to_value=##fall_to##\n\n";
 
 print SIM ".param init_delay = half_clk_period\n";
 print SIM "+ rise_time= 50p\n";
@@ -594,7 +599,8 @@ foreach $i(0 .. $#ipins)
 #This will initialise the outputs of all FFs to 0 to begin with and then change the input of the FF to the current cycle reference input in Verilog sim
 # print SIM "\n\nV$i $new 0 PWL( 0 ##$new\_reference_minus1##  change_time ##$new\_reference_minus1## change_time_rise  ##$new\_reference_1## k_plus1 ##$new\_reference_1## k_plus1_rise ##$new\_reference_2## $sim_time ##$new\_reference_2##)\n";
 
- print SIM "\n\nV$i $new 0 PWL( 0  ##$new\_reference_1## k_plus1 ##$new\_reference_1## k_plus1_rise ##$new\_reference_2## $sim_time ##$new\_reference_2##)\n";
+# print SIM "\n\nV$i $new 0 PWL( 0  ##$new\_reference_1## k_plus1 ##$new\_reference_1## k_plus1_rise ##$new\_reference_2## $sim_time ##$new\_reference_2##)\n";
+ print SIM "\n\nV$i $new 0 PWL( 0  ##$new\_reference_1## k_plus1 ##$new\_reference_1## k_plus1_rise ##$new\_reference_2## ##sim_time## ##$new\_reference_2##)\n";
  
    }
 }
@@ -767,22 +773,22 @@ foreach $i(0 .. $#to_ff)
 	
 		if ($qreg==1) #For ISCAS- benchmarks for eg.
 		{
-		$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]\_q\_reg:Q) from=$fall_from"."s"." to=$fall_to"."s\n";
+		$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]\_q\_reg:Q) from=##fall_from##"."s"." to=##fall_to##"."s\n";
 		}
 		else
 		{ 
 		#This will need to be enabled for non-ISCAS benchmark circuits for eg
- 		$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]:Q) from=$fall_from"."s"." to=$fall_to"."s\n";
+ 		$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]:Q) from=##fall_from##"."s"." to=##fall_to##"."s\n";
  		}
 	####################  Rise edge  ########################## 
  		if ($qreg==1) #For ISCAS- benchmarks for eg.
 		{
-		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]\_q\_reg:Q) from=$rise_from_2nd"."s"." to=$rise_to_2nd"."s\n";
+		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]\_q\_reg:Q) from=##rise_from_2nd##"."s"." to=##rise_to_2nd##"."s\n";
 		}
 		 else
 		 {
 		 #This will need to be enabled for non-ISCAS benchmark circuits for eg
-		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]:Q) from=$rise_from_2nd"."s"." to=$rise_to_2nd"."s\n";
+		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]:Q) from=##rise_from_2nd##"."s"." to=##rise_to_2nd##"."s\n";
 	 	}
  
 	 ####################  Time 0  ########################## 
@@ -804,22 +810,22 @@ foreach $i(0 .. $#to_ff)
 	####################  Fall edge  ##########################
 		if ($qreg==1) #For ISCAS- benchmarks for eg.
 		{
-		$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]\_q\_reg:QN) from=$fall_from"."s"." to=$fall_to"."s\n";
+		$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]\_q\_reg:QN) from=##fall_from##"."s"." to=##fall_to##"."s\n";
 		}
 		else
 		{ 
 		#This will need to be enabled for non-ISCAS benchmark circuits for eg
-	 	$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]:QN) from=$fall_from"."s"." to=$fall_to"."s\n";
+	 	$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]:QN) from=##fall_from##"."s"." to=##fall_to##"."s\n";
 	 	}
  	####################  Rise edge  ########################## 
 		if ($qreg==1) #For ISCAS- benchmarks for eg.
 		{
-		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]\_q\_reg:QN) from=$rise_from_2nd"."s"." to=$rise_to_2nd"."s\n";
+		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]\_q\_reg:QN) from=##rise_from_2nd##"."s"." to=##rise_to_2nd##"."s\n";
 		}
 		else
 		{ 
 		#This will need to be enabled for non-ISCAS benchmark circuits for eg
-		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]:QN) from=$rise_from_2nd"."s"." to=$rise_to_2nd"."s\n";
+		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]:QN) from=##rise_from_2nd##"."s"." to=##rise_to_2nd##"."s\n";
 		} 
 	 ####################  Time 0  ########################## 
 	 	if ($qreg==1) #For ISCAS- benchmarks for eg.
@@ -840,24 +846,24 @@ foreach $i(0 .. $#to_ff)
 	####################  Fall edge  ##########################
 		if ($qreg==1) #For ISCAS- benchmarks for eg.
 		{
-		 $measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]\_q\_reg:QN) from=$fall_from"."s"." to=$fall_to"."s\n";
+		 $measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]\_q\_reg:QN) from=##fall_from##"."s"." to=##fall_to##"."s\n";
 		 }
 		else
 		{
 		 #This will need to be enabled for non-ISCAS benchmark circuits for eg
-		 $measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]:QN) from=$fall_from"."s"." to=$fall_to"."s\n";
+		 $measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]:QN) from=##fall_from##"."s"." to=##fall_to##"."s\n";
 		 }
  	
  	####################  Rise edge  ########################## 
 	 	if ($qreg==1) #For ISCAS- benchmarks for eg.
 		{
-		$measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]\_q\_reg:QN) from=$rise_from_2nd"."s"." to=$rise_to_2nd"."s\n";
+		$measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]\_q\_reg:QN) from=##rise_from_2nd##"."s"." to=##rise_to_2nd##"."s\n";
 		}
 
 		else
 		{
 		#This will need to be enabled for non-ISCAS benchmark circuits
-		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]:QN) from=$rise_from_2nd"."s"." to=$rise_to_2nd"."s\n";
+		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]:QN) from=##rise_from_2nd##"."s"." to=##rise_to_2nd##"."s\n";
 		 }
 	 
 	 ####################  Time 0  ########################## 
@@ -879,23 +885,23 @@ foreach $i(0 .. $#to_ff)
 	####################  Fall edge  ##########################
 		if ($qreg==1) #For ISCAS- benchmarks for eg.
 		{
-		$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]\_q\_reg:Q) from=$fall_from"."s"." to=$fall_to"."s\n";
+		$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]\_q\_reg:Q) from=##fall_from##"."s"." to=##fall_to##"."s\n";
 		}
 		
 		else
 		{
 		 #This will need to be enabled for non-ISCAS benchmark circuits
-	 	$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]:Q) from=$fall_from"."s"." to=$fall_to"."s\n";
+	 	$measure_at_falling_edge.="meas tran ff_op_fall_$i MAX v(X$module.$to_ff[$i]:Q) from=##fall_from##"."s"." to=##fall_to##"."s\n";
  		}
  	####################  Rise edge  ########################## 
 	 	if ($qreg==1) #For ISCAS- benchmarks for eg.
 		{
-		$measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]\_q\_reg:Q) from=$rise_from_2nd"."s"." to=$rise_to_2nd"."s\n";
+		$measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]\_q\_reg:Q) from=##rise_from_2nd##"."s"." to=##rise_to_2nd##"."s\n";
 		}
 		else
 		{
 		 #This will need to be enabled for non-ISCAS benchmark circuits
-		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]:Q) from=$rise_from_2nd"."s"." to=$rise_to_2nd"."s\n";
+		 $measure_at_rising_edge.="meas tran ff_op_rise_$i MAX v(X$module.$to_ff[$i]:Q) from=##rise_from_2nd##"."s"." to=##rise_to_2nd##"."s\n";
 	 	}
 	 
 	  ####################  Time 0  ########################## 
@@ -919,7 +925,7 @@ foreach $i(0 .. $#to_ff)
 #Adding the control part
 print SIM "\n\n.control\n";
 print SIM "option rshunt = 1e12\noption itl4 = 100  reltol =0.005  trtol=8 pivtol=1e-11  abstol=1e-10 \n**option CONVERGE=-1\n";
-print SIM "tran 20ps ".$sim_time."s\n\n";
+print SIM "tran 20ps ##sim_time##"."s\n\n";
 print SIM "**Uncomment the following and run this spice file, if you need a waveform\n";
 print SIM "**write waveform_file.raw v(clk) v(input_dec_2_) v(input_dec_1_) v(input_dec_0_)  v(output_dec_3_) v(output_dec_1_) \n*+v.xdecoder_behav_pnr.xu11.vcharge#branch \n\n";
 

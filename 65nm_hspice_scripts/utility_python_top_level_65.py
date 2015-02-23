@@ -90,7 +90,6 @@ days=options.days
 hrs=options.hrs
 mins=options.mins
 script=options.script
-
 #Example usage: python python1_read_RTL_syn_pnr.py -f c880.vhd -m c880_behav_pnr -clk 900
 os.system('python python_read_RTL_syn_pnr_65.py -f %s -m %s -c %s -p %s' %(rtl,module,clkfreq,main_path))
 
@@ -127,7 +126,6 @@ os.system('python python_choose_subckts_library.py -p %s -m %s' %(main_path,modu
 os.system('perl perl_glitchLibGen_65.pl -p %s -i CORE65GPSVT_selected_lib_vg.sp' %(main_path))
 print "***Created glitch library..\n"
 time.sleep(5)
-
 
 ##Generate a template simulatable spice netlist from the dspf file generated after pnr. This would include all .ic, Voltage sources, meas, tran, control, param etc
 #NetlistFormat.pl

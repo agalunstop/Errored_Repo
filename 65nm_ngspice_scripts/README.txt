@@ -80,6 +80,15 @@ Modify the parameters in the jobscript.txt. Before launching thousands of jobs, 
 
 Changes done to scripts:
 
+########## changes done by sonal #####################
+
+perl_deckgen.pl : To be done: should be able to change op voltage, frequency
+and current injected in each file generated; put an option sanity when sanity
+check is done with current zero and report is generated; without sanity
+option, list of op voltages and frequencies should be taken and separate spice
+results folder should be generated.
+
+########### changes done by nanditha ##################
 perl_spice_netlist_format_noR_65.pl script updated- .ic statements: Oct 24 2014 
 
 utility_python_top_level_yuva_65.py: #Created a parameter scripts_path - Oct 20 2014

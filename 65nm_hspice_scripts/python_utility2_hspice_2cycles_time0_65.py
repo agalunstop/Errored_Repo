@@ -2,6 +2,8 @@
 #!/usr/bin/env python
 
 
+#Added -clk and -curr option to pass to deckgen script so as to vary the
+#operating frequency and current injected in spice file
 #Added -v option to specify operating voltage to pass to the comparison
 #scripts --sonal
 #Created a time0 spice_rtl_difference file will check the initial condition that is obtained vs expected- so that we can check if there is some error - July 2014
@@ -14,9 +16,9 @@
 #This version of the script has the facility of selecting the gate based on the area of the gate. This version of the script uses another script python_weighted_gateselection.py to pick the random gate based on its area: Nov 17 2013
 #Glitch insertion window is within the 2.5 cycles, and not the 6.5 cycles that is required for the case with intermediate FFs
 
-#Example usage: python python_utility2_hspice_2cycles_time0_65.py -m b09 -p /home/users/nanditha/Documents/utility/65nm/b09 -t 65 -n 4 --group 4 --clk 350 --volt 1.1 -d b09 --scripts_path /home/users/nanditha/Documents/utility/65nm/scripts_run
+#Example usage: python python_utility2_hspice_2cycles_time0_65.py -m b09 -p /home/users/nanditha/Documents/utility/65nm/b09 -t 65 -n 4 --group 4 --clk 350 --volt 1.1 --curr 1.1 -d b09 --scripts_path /home/users/nanditha/Documents/utility/65nm/scripts_run
 
-#Example usage: python python_utility2_hspice_2cycles_time0_65.py -m c880_clk_ipFF -p /home/users/nanditha/Documents/utility/65nm/c880 -t 65 -n 4 --group 4 --clk 350 --volt 1.1 -d c880 --scripts_path /home/users/nanditha/Documents/utility/65nm/scripts_run
+#Example usage: python python_utility2_hspice_2cycles_time0_65.py -m c880_clk_ipFF -p /home/users/nanditha/Documents/utility/65nm/c880 -t 65 -n 4 --group 4 --clk 350 --volt 1.1 --curr 1.1 -d c880 --scripts_path /home/users/nanditha/Documents/utility/65nm/scripts_run
 
 import optparse
 import re,os
@@ -40,6 +42,7 @@ parser.add_option("-d", "--design", dest="design_folder",help="Enter the name of
 parser.add_option("-t", "--tech",dest='tech', help='Enter the technology node-for eg., For 180nm, enter 180')
 parser.add_option("--group",dest='group',  help='Enter the number of spice decks to be simulated at a time. For eg., if -n option is 10000, and say we want to run 100 at a time, then enter 100')
 parser.add_option("-c", "--clk",dest='clk', help='Enter the clk freq in MHz')
+parser.add_option("-a", "--curr",dest='curr', help='Enter the peak current for glitch')
 parser.add_option("-e", "--scripts_path", dest="scripts_path",help="Enter the ENTIRE path to your scripts folder.")
 
 (options, args) = parser.parse_args()
@@ -53,6 +56,7 @@ design_folder=options.design_folder
 tech=options.tech
 num_at_a_time=options.group
 clk=(options.clk)
+curr=(options.curr)
 scripts_path=options.scripts_path
 
 
@@ -315,7 +319,8 @@ for loop in range(start_loop, (num_of_loops+1)):
 
 
 		#deckgen.pl will need to be remotely executed through python_repeat_deckgen.py multiple number of times
-		os.system('perl perl_deckgen_65.pl -s %s/reference_spice.sp  -r %s/%s_reference_out/tool_reference_out.txt -n %d -m %s -f %s  -o %s -g %s -d %s -c %s -i %s' %(path,path,module,loop_var,module,path,loop,rand_gate,rand_drain,rand_clk,rand_glitch))
+		#perl $script_dir/perl_deckgen_65.pl -s $design_dir/reference_spice.sp  -r $design_dir/$module_name\_reference_out/tool_reference_out.txt -v 0.9 --curr 0.4 --clk 500 -n $deck_no -m $module_name -f $design_dir -g 12 -d 6 -c 9190 -i 7.221749e-10 -o $loop_no
+		os.system('perl perl_deckgen_65.pl -s %s/reference_spice.sp  -r %s/%s_reference_out/tool_reference_out.txt -n %d -m %s -f %s  -o %s -g %s -d %s -c %s -i %s -v %s --clk %s --curr %s' %(path,path,module,loop_var,module,path,loop,rand_gate,rand_drain,rand_clk,rand_glitch,volt,clk,curr))
 		
 ##################Script repeat_deckgen copied ends here####################################
 	
