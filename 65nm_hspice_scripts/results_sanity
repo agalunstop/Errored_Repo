@@ -1,0 +1,18 @@
+Running 3000 simulations at voltage = 1, frequency = 2382
+Created log_sim_2382_1
+log_sim_2382_1 passed
+Running 3000 simulations at voltage = 0.9, frequency = 1706
+Created log_sim_1706_0.9
+log_sim_1706_0.9 passed
+Running 3000 simulations at voltage = 0.8, frequency = 936
+Created log_sim_936_0.8
+log_sim_936_0.8 passed
+Running 3000 simulations at voltage = 0.7, frequency = 295
+Created log_sim_295_0.7
+log_sim_295_0.7 passed
+Running 3000 simulations at voltage = 0.6, frequency = 53
+Created log_sim_53_0.6
+log_sim_53_0.6 passed
+Running 3000 simulations at voltage = 0.5, frequency = 6
+Created log_sim_6_0.5
+log_sim_6_0.5 passed

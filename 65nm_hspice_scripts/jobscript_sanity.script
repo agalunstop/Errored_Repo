@@ -2,9 +2,9 @@
 function run 
 #parameters : $volt $freq $no_of_sim
 {
-	sleep 5
+	sleep 1
 	echo last simulation was at voltage=$1 and frequency=$2 > /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1/log_sim
-	python python_utility2_hspice_2cycles_time0_65.py -m decoder_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1 -d sim_decoder_1000_1 -t 65 -n $3 --group 3 --clk $2 --volt $1 --curr 0 --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts | tee log_sim_$2\_$1
+#	python python_utility2_hspice_2cycles_time0_65.py -m decoder_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1 -d sim_decoder_1000_1 -t 65 -n $3 --group 3 --clk $2 --volt $1 --curr 0 --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts | tee log_sim_$2\_$1
 #	echo "Probability of atleast one flip is: 0.001" > log_sim_$2\_$1
 	return 1
 }
@@ -19,19 +19,21 @@ resolution=1
 no_of_sim=300
 rep_sim=1
 `\rm $logfile`
-`\rm log_sim*`
+`\rm $resultfile`
+#`\rm log_sim*`
 #binary search algo
 volt=0.5
 #op_volt=(0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0)
 op_volt=(1.0 0.9 0.8 0.7 0.6 0.5)
-op_freq=(2383 1708 936 295 53 6)
+op_freq_max=(2383 1708 936 295 53 6)
+op_freq_min=(2000 1500 800 190 40 1)
 len_arr=${#op_volt[@]}
-echo $len_arr
+#echo $len_arr
 #op_volt=(0.5 0.4 0.3)
 for ((l=0;$l<$len_arr;++l)); do
 	volt=${op_volt[$l]}
-	freqpres=${op_freq[$l]}
-	freqmin=0
+	freqpres=${op_freq_max[$l]}
+	freqmin=${op_freq_min[$l]}
 	passonce=0
 	while [ 1 ]
 	do
@@ -53,7 +55,7 @@ for ((l=0;$l<$len_arr;++l)); do
 			break
 		fi
 		for ((i = 0; i != length; i++)); do
-			if [ ${result[i]} == "0.0" ];then
+			if [ `echo (${result[i]})'='(0.0) | bc -l` ];then
 				fail=0
 			else
 				fail=1
