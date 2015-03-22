@@ -4,3 +4,4 @@ jobscript1.txt
 log_*
 .nfs*
 result_*
+*.log
