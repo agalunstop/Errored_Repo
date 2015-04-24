@@ -352,11 +352,11 @@ for loop in range(start_loop, (num_of_loops+1)):
 	
 ##########################################################
 #Comment this out to see the decks and the result files it generates. 	
-	spice_dir = '%s/spice_decks_%s' %(path,loop)
-
-	
-	if os.path.exists(spice_dir):
-		shutil.rmtree(spice_dir)
+#	spice_dir = '%s/spice_decks_%s' %(path,loop)
+#
+#	
+#	if os.path.exists(spice_dir):
+#		shutil.rmtree(spice_dir)
 
 ########################################End of loop########################################################
 

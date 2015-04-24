@@ -11,6 +11,8 @@ independent of the scripts folder
 
 You need to have the spice library file “CORE65GPSVT_all_vdd_gnd_WL_ad.sp” 
 one level up from your scripts folder, to generate the glitch library. 
+This library file is a modified version of
+/home/projects1/ST_Models/cmos065_534/CORE65GPSVT_5.1/physical/CORE65GPSVT.spi
 
 ---------pnr script simulation steps---------
 

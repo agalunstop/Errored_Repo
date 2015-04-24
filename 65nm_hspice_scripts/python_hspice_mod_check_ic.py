@@ -188,8 +188,8 @@ num_of_csv=len(deck_num)
 
 #Rename the csv output files
 for j in range(0,num_of_csv):
-	print "Renaming %s/spice_decks_%d/hspice_deck_%s.mt0.csv" %(path,dir_num,deck_num[j])
 	if os.path.exists('%s/spice_decks_%d/hspice_deck_%s.mt0.csv' %(path,dir_num,deck_num[j])):
+		print "Renaming %s/spice_decks_%d/hspice_deck_%s.mt0.csv" %(path,dir_num,deck_num[j])
 		os.rename('%s/spice_decks_%d/hspice_deck_%s.mt0.csv' %(path,dir_num,deck_num[j]),'%s/spice_decks_%d/glitch_report_outputs_%s.csv' %(path,dir_num,deck_num[j]))
 
 

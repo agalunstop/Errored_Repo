@@ -201,6 +201,7 @@ for r in range(len(headers_rtl)):
 				for num_rows in range(0,int(num)): # 10 rows. This will be a user input: total num
 						
 					spice_val=sp[num_rows]
+					print len(sp), num_rows 
 					if rt[num_rows] == '1': 
 						rtl_val = vdd_val  #This will have to depend on the techn node
 						#print "\nrt val in rt[num_rows] == 1: is", rtl_val

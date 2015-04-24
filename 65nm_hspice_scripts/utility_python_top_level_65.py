@@ -95,8 +95,6 @@ os.system('python python_read_RTL_syn_pnr_65.py -f %s -m %s -c %s -p %s' %(rtl,m
 
 print('Done 1st script rtl+pnr\n')
 #time.sleep(5)
-
-
 #Example usage: perl perl2_outwrtr.pl -v pnr/op_data/c880_behav_pnr_final.v -m c880_behav_pnr
 os.system('perl perl_write_simfile_65.pl -v %s/pnr/op_data/%s_final.v -m %s -p %s' %(main_path,module,module,main_path))
 
@@ -126,7 +124,6 @@ os.system('python python_choose_subckts_library.py -p %s -m %s' %(main_path,modu
 os.system('perl perl_glitchLibGen_65.pl -p %s -i CORE65GPSVT_selected_lib_vg.sp' %(main_path))
 print "***Created glitch library..\n"
 time.sleep(5)
-
 ##Generate a template simulatable spice netlist from the dspf file generated after pnr. This would include all .ic, Voltage sources, meas, tran, control, param etc
 #NetlistFormat.pl
 #perl NetlstFrmt.pl -v c880_behav_pnr_modelsim.v -s pnr/op_data/c880_behav_pnr_final.dspf -l glitch_osu018_stdcells_correct_allcells.sp -c 1e9 -t 180 -m c880_behav_pnr
@@ -138,5 +135,3 @@ time.sleep(5)
 
 ###sonal's modification
 #os.system('python python_create_jobscript_65.py -m %s -p %s -d %s -t %s -n %s --group %s --clk %s --proc_node %s --ppn %s --days %s --hrs %s --mins %s --script %s --path_here %s' %(module,extl_folder,design_folder,techn,num,group,clkfreq,nodes,ppn,days,hrs,mins,script,main_path))
-
-

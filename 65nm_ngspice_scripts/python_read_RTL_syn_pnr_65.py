@@ -31,10 +31,8 @@ path=options.path
 #Invoke rtl2gds and create directories in CURRENT WORKING DIRECTORY ONLY
 os.chdir("%s" %path)
 os.system("rtl2gds -genScr=%s" %(path))
-
 #Run synthesis
 os.system('rtl2gds -rtl=%s -rtl_top=%s -syn -frequency=%s' %(filepath,options.module_name,clkfreq))	
-
 #These 3 commands also work
 #os.system("rtl2gds -rtl={0} -rtl_top={1} -syn".format(options.filepath, options.module_name))
 #os.system("rtl2gds -rtl={options.filepath} -rtl_top={options.module_name} -syn".format(args=args))
@@ -144,7 +142,6 @@ time.sleep(5)
 
 #########################Done synthesis#########################################
 #Run place and route
-
 os.system('rtl2gds -rtl=%s -rtl_top=%s -pnr -frequency=%s' %(filepath,options.module_name,clkfreq))	
 #print "\n ****Completed synthesis and place and route****\n"
 
@@ -301,5 +298,4 @@ if '1\'b0' in open('%s/pnr/op_data/%s_final.v' %(path,module)).read():
 else:
 	print "\n1'b0 is NOT present in the verilog file and there is no need to manually tie it to gnd in the spice file\n"
 	time.sleep(5)
-
 

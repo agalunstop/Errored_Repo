@@ -929,6 +929,8 @@ print SIM "tran 20ps ##sim_time##"."s\n\n";
 print SIM "**Uncomment the following and run this spice file, if you need a waveform\n";
 print SIM "**write waveform_file.raw v(clk) v(input_dec_2_) v(input_dec_1_) v(input_dec_0_)  v(output_dec_3_) v(output_dec_1_) \n*+v.xdecoder_behav_pnr.xu11.vcharge#branch \n\n";
 
+print SIM "**For hspice simulations\n";
+print SIM "*.option post\n";
 print SIM "\n\n**************************** Measuring Flip Flop output at 2nd falling edge *************************************************\n";
 $measure_at_falling_edge=~s/\[/_/g;
 $measure_at_falling_edge=~s/\]/_/g;
