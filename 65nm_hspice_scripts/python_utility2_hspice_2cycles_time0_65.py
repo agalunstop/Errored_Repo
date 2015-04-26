@@ -161,7 +161,7 @@ os.system('rm -rf %s/spice_decks_*' %path)
 frand = open('%s/random_number_histogram.txt' %(path), 'w')
 
 seed = random.randint(0, sys.maxint)
-#seed=4173137397089693498
+#seed=8740245778426848296
 print "seed is: ", seed
 frand.write("Seed:%d\n" %seed)
 
@@ -327,9 +327,8 @@ for loop in range(start_loop, (num_of_loops+1)):
 		
 	#The following script will run GNU Parallel and hspice 
 	os.system ('python python_hspice_mod_check_ic.py -p %s -n %s -d %s -o %d -c %s' %(path,num_at_a_time,design_folder,loop,scripts_dir))
-	
+
 	os.system('python python_hspice_combine_csv_results.py -n %s -d %s -o %d -p %s' %(num_at_a_time,design_folder,loop,path))
-	
 	
 	seed_new= int(random.randrange(100000)*random.random())  #Used by compare script to backup random decks
 	#seed_new=seed*loop
@@ -340,13 +339,11 @@ for loop in range(start_loop, (num_of_loops+1)):
 	
 	print "Comparing the RTL and spice outputs at the 2nd falling edge (3rd rising edge)\n"
 	os.system('python python_compare_3rd_edge_65.py -m %s -f %s -n %s -t %s -l %d -v %s' %(module,path,num_at_a_time,tech,loop,volt))
-
 	print "Comparing the RTL and spice outputs at the 2nd rising edge \n"
 	os.system('python python_compare_2nd_edge_65.py -m %s -f %s -n %s -t %s -l %d -v %s' %(module,path,num_at_a_time,tech,loop,volt))
 	
 	print "Comparing the RTL and spice outputs at the time=0 \n"
 	os.system('python python_compare_time0_65.py -m %s -f %s -n %s -t %s -l %d -v %s' %(module,path,num_at_a_time,tech,loop,volt))
-
 	
 #For testing out new glitch files (afterdeleting process if at each echo statement). comment this out in the final run, else it will copy ALL spice files and consume lot of disk space
 	
@@ -359,7 +356,6 @@ for loop in range(start_loop, (num_of_loops+1)):
 #		shutil.rmtree(spice_dir)
 
 ########################################End of loop########################################################
-
 print "Combining all rtl diff files\n"
 #seed="1644931266534706027"
 os.system('python  python_count_flips_2nd_3rd_edge_65.py -f %s  -n %s  --group %s -s %s' %(path,num,num_at_a_time,seed))  #To save the seed to results file
@@ -391,4 +387,3 @@ os.system('python  %s/python_FF_strike_taxonomy_65.py  -p %s -m %s --gl_multiple
 
 print "\nCombining the pdf reports\n"
 #os.system('python python_combine_pdfs_65.py -p %s/spice_results -m %s' %(path,module))
-

@@ -149,6 +149,7 @@ km=[]
 
 #For non-matching headers
 #Match the header in rtl file with that in every header in spice file
+print "Length:",len(headers_rtl)
 for r in range(len(headers_rtl)):
 	no_match_flag=1	 ##Reset this every r loop only
 	for s in range(len(headers)):
@@ -156,19 +157,22 @@ for r in range(len(headers_rtl)):
 			if (headers[s]!= headers_rtl[r]): ##That is, if the headers in spice file do not match with the
 			#if (re.match(headers[s], headers_rtl[r]) == None): ##That is, if the headers in spice file do not match with the rtl headers
 				no_match_flag=1 #No match
+				print "No match Headers are spice: %s and rtl: %s" %(headers[s],headers_rtl[r])
 			else:
 				no_match_flag=0 #Match
+				print "Match: Headers are spice: %s and rtl: %s" %(headers[s],headers_rtl[r])
 
-
+	print "no_match_flag value is ",no_match_flag
 	if (no_match_flag==1):	 #If at the end of the looping over all headers, still there is no match, then #print out the header as it is		
 		#print "\n\nNo Match!! \nHeader: %s \nspice column: %s \nRTL column: %s:\n" %(headers_rtl[r],column[headers[s]],column_rtl[headers_rtl[r]])
 		k1=[]
 		k1.append(headers_rtl[r]) #Append header
 		rt= column_rtl[headers_rtl[r]] #Get the entire column in the RTL file
-
+		print "Num of rows is ",num
+		print "List is ",rt
 		for num_rows in range(0,int(num)): # 10 rows. This will be a user input
 			k1.append(rt[num_rows])
-			#print "\n rtl contents inside no match header is:", rt[num_rows]
+			print "\n rtl contents inside no match header is:", rt[num_rows]
 
 		km.append(k1) # appended to an empty list
 		#print "km is\n",km
@@ -200,8 +204,9 @@ for r in range(len(headers_rtl)):
 	
 				for num_rows in range(0,int(num)): # 10 rows. This will be a user input: total num
 						
-					spice_val=sp[num_rows]
-					print len(sp), num_rows 
+					
+	#				print len(sp), num_rows, rt[num_rows] 
+					spice_val = sp[num_rows]
 					if rt[num_rows] == '1': 
 						rtl_val = vdd_val  #This will have to depend on the techn node
 						#print "\nrt val in rt[num_rows] == 1: is", rtl_val
@@ -213,7 +218,7 @@ for r in range(len(headers_rtl)):
 					ab=abs(float(spice_val) - float(rtl_val))
 					#print "\ndiff is\n",ab
 					#print "\nab is\n", ab
-					if ab <= 0.2: #This will have to depend on the techn node
+					if ab <= 0.2*float(vdd_val): #This will have to depend on the techn node
 						k.append('0')
 						#print "\nab in ab<0.5 is\n", ab
 					else:
@@ -339,11 +344,9 @@ if __name__ == "__main__":
 """
 
 # Remember to uncomment this once debugging is done
-
 if os.path.isfile('%s/spice_results/final_results_spice_outputs_%d.csv' %(path,int(outloop))):
 	print "****Removing the existing combined results file in results folder****\n"
 	os.remove('%s/spice_results/final_results_spice_outputs_%d.csv' %(path,int(outloop)))
-
 	############################Comparison done#######################
 
 

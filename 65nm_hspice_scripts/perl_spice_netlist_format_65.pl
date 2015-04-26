@@ -931,6 +931,7 @@ print SIM "**write waveform_file.raw v(clk) v(input_dec_2_) v(input_dec_1_) v(in
 
 print SIM "**For hspice simulations\n";
 print SIM "*.option post\n";
+print SIM "*view .tr0 file using cscope\n";
 print SIM "\n\n**************************** Measuring Flip Flop output at 2nd falling edge *************************************************\n";
 $measure_at_falling_edge=~s/\[/_/g;
 $measure_at_falling_edge=~s/\]/_/g;

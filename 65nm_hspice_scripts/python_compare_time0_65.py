@@ -214,7 +214,7 @@ for r in range(len(headers_rtl)):
 					ab=abs(float(spice_val) - float(rtl_val))
 					#print "\ndiff is\n",ab
 					#print "\nab is\n", ab
-					if ab <= 0.2: #This will have to depend on the techn node
+					if ab <= 0.2*float(vdd_val): #This will have to depend on the techn node
 						k.append('0')
 						#print "\nab in ab<0.5 is\n", ab
 					else:
