@@ -366,10 +366,10 @@ print "Random glitch point is at time $glitch_location \n";
 $clk_period = (1/$clk)*(0.000001);
 
 $sim_time=3*$clk_period;#defining simulation time
-$fall_from=(2.7*$clk_period); #defining fall time window
+$fall_from=(2.5*$clk_period); #defining fall time window
 $fall_to= ($fall_from + 50e-12);
 
-$rise_from_2nd=(1.7*$clk_period); #defining fall time window
+$rise_from_2nd=(1.5*$clk_period); #defining fall time window
 $rise_to_2nd= ($rise_from_2nd + 50e-12);
 
 $vdd = $voltage;

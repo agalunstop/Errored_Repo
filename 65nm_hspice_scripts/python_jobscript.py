@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-import re,os,sys
+#Author : Sonal Gupta
+import re
+import os
+import sys
 import time
 import optparse
 import os.path
@@ -29,7 +32,10 @@ def run_sim(ckt,volt,freq,sim,curr):
 #	if os.path.isfile('log_sim_%s_%s_%s' %(ckt,freq,volt)):
 #		pass
 #	else:	
-	os.system('python python_utility2_hspice_2cycles_time0_65.py -m %s_clk_ipFF -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group 3 --clk %s --volt %s --curr %s --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts >/dev/null 2&>log_sim_%s_%s_%s' %(ckt,ckt,ckt,sim,freq,volt,curr,ckt,freq,volt))
+#	for ISCAS circuits
+#	os.system('python python_utility2_hspice_2cycles_time0_65.py -m %s_clk_ipFF -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group 5 --clk %s --volt %s --curr %s --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts >/dev/null 2&>log_sim_%s_%s_%s' %(ckt,ckt,ckt,sim,freq,volt,curr,ckt,freq,volt))
+#	for decoder
+	os.system('python python_utility2_hspice_2cycles_time0_65.py -m %s_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group 5 --clk %s --volt %s --curr %s --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts >/dev/null 2&>log_sim_%s_%s_%s' %(ckt,ckt,ckt,sim,freq,volt,curr,ckt,freq,volt))
 #	os.system('echo Probability of atleast one flip is: 0.0000 > log_sim_%s_%s' %(freq,volt))
 #	os.system('cp /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1/spice_results/taxonomy_summary_FFs_decoder_op_ip.csv /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1/sim_results/taxonomy_%s_%s_summary_FFs_decoder_op_ip.csv' %(freq,volt))
 #	os.system('cp /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1/spice_results/taxonomy_summary_gates_decoder_op_ip.csv /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1/sim_results/taxonomy_%s_%s_summary_gates_decoder_op_ip.csv' %(freq,volt))
@@ -56,10 +62,10 @@ def check_log(log_sim):
 			return 2
 
 ######## Main program starts #########
-circuits = ['c499','c880','c1355','c1908']
-simulation = [9,90,900,3000]
+circuits = ['decoder']
+simulation = [500]
 op_cond_volt = 		[1,		0.9,		0.8,		0.7,		0.6,		0.5,		0.4,		0.3]
-op_cond_freq_dict = {	'c499' : [1646,	869,		575,		194,		43,			3,			0.5,		0.032],
+op_cond_freq_dict = {	'decoder' : [3900,	3800,		3800,		3800,		3800,			3800,			3800,		3800],
 						'c880' : [1843,	904,		595,		131,		29,			4,			0.563,		0.053],
 						'c1355': [1622,	807,		607,		186,		30,			4,			0.375,		0.03],
 						'c1908': [2000,	900,		700,		200,		50,			5,			0.6,		0.06]}
@@ -75,18 +81,18 @@ mode=options.mode
 output_file=sys.stdout
 if mode == 'sanity':
 	output_file.write('entered sanity\n')
-	for ckt_n in range(0,3):
+	for ckt_n in range(len(circuits)):
 		ckt = circuits[ckt_n]
 		op_cond_freq = op_cond_freq_dict[ckt]
-		op_cond_min_freq = [0,	0,			0,			0,			0,			0,			0,			0]
+		op_cond_min_freq = [3000,	0,			0,			0,			0,			0,			0,			0]
 		output_file.write('simulating for %s\n' %(ckt))
-		for n in range(2,4):
+		for n in range(len(simulation)):
 			no_of_sim = simulation[n]
 			for i in range(len(op_cond_volt)):
 				freq = op_cond_freq[i]
 				volt = op_cond_volt[i]
 				curr = 0.0
-				resolution = 1
+				resolution = 100
 				exit = 0
 				inval_sim = 0
 				while exit == 0:

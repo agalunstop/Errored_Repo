@@ -478,8 +478,8 @@ print SIM ".param fall_from_value=##fall_from##\n";
 print SIM "+ fall_to_value=##fall_to##\n\n";
 
 print SIM ".param init_delay = half_clk_period\n";
-print SIM "+ rise_time= 50p\n";
-print SIM "+ fall_time= 50p\n\n";
+print SIM "+ rise_time= 5p\n";
+print SIM "+ fall_time= 5p\n\n";
 
 print SIM "**2.5 cycle simulation**\n";
 print SIM ".param change_time='(half_clk_period/3)'\n";
@@ -932,7 +932,7 @@ print SIM "**write waveform_file.raw v(clk) v(input_dec_2_) v(input_dec_1_) v(in
 print SIM "**For hspice simulations\n";
 print SIM "*.option post\n";
 print SIM "*view .tr0 file using cscope\n";
-print SIM "\n\n**************************** Measuring Flip Flop output at 2nd falling edge *************************************************\n";
+print SIM "\n\n**************************** Measuring Flip Flop output at 3rd rising edge *************************************************\n";
 $measure_at_falling_edge=~s/\[/_/g;
 $measure_at_falling_edge=~s/\]/_/g;
 $measure_at_falling_edge=~s/\//_/g;
