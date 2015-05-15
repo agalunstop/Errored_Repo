@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 #Author : Sonal Gupta
+#Readability is what I strive for
+
 import re
 import os
 import sys
@@ -7,141 +9,206 @@ import time
 import optparse
 import os.path
 from optparse import OptionParser
+import csv
 
-if os.path.isfile('sanity.log'):
-	os.system('rm sanity.log')
+class log_file_manager(object):
+	"""Provides methods to write to a log file along
+	with printing on stdout"""
+	def __init__(self,log_file1="sanity.log",log_file2="result_sanity.log"):
+		self.terminal = sys.stdout
+		self.log_file1 = log_file1
+		self.log_file2 = log_file2
 
-class Logger(object):
-    def __init__(self):
-        self.terminal = sys.stdout
-        self.log = open("sanity.log", "a")
-        self.log2 = open("result_sanity.log", "a")
+	def open_logs(self,write_mode="a"):
+		self.log1 = open(self.log_file1, write_mode)
+		self.log2 = open(self.log_file2, write_mode)
 
-    def write(self, message):
-        self.terminal.write(message)
-        self.log.write(message)  
+	def write_to_log1(self, message):
+		self.terminal.write(message)
+		self.terminal.write("\n")
+		self.log1.write(message)  
+		self.log1.write("\n")  
+	
+	def write_to_log2(self, message):
+		self.terminal.write(message)
+		self.terminal.write("\n")
+		self.log2.write(message)  
+		self.log2.write("\n")  
+	
+	def close_logs(self):
+		self.log1.close()
+		self.log2.close()
+	
+	def clean_logs(self):
+		if os.path.exists(self.log_file1):
+			os.remove(self.log_file1)
+		if os.path.exists(self.log_file2):
+			os.remove(self.log_file2)
+#------------------------------------------------------
 
-    def write2(self, message):
-        self.terminal.write(message)
-        self.log2.write(message)  
-
-sys.stdout = Logger()
-
-def run_sim(ckt,volt,freq,sim,curr):
+def run_sim(circuit_name,op_volt,op_freq,no_of_sim,group,using_logger,inj_curr,just_checking_log_flag=0):
 	time.sleep(1)
-#	if os.path.isfile('log_sim_%s_%s_%s' %(ckt,freq,volt)):
-#		pass
-#	else:	
-#	for ISCAS circuits
-#	os.system('python python_utility2_hspice_2cycles_time0_65.py -m %s_clk_ipFF -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group 5 --clk %s --volt %s --curr %s --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts >/dev/null 2&>log_sim_%s_%s_%s' %(ckt,ckt,ckt,sim,freq,volt,curr,ckt,freq,volt))
-#	for decoder
-	os.system('python python_utility2_hspice_2cycles_time0_65.py -m %s_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group 5 --clk %s --volt %s --curr %s --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts >/dev/null 2&>log_sim_%s_%s_%s' %(ckt,ckt,ckt,sim,freq,volt,curr,ckt,freq,volt))
-#	os.system('echo Probability of atleast one flip is: 0.0000 > log_sim_%s_%s' %(freq,volt))
-#	os.system('cp /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1/spice_results/taxonomy_summary_FFs_decoder_op_ip.csv /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1/sim_results/taxonomy_%s_%s_summary_FFs_decoder_op_ip.csv' %(freq,volt))
-#	os.system('cp /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1/spice_results/taxonomy_summary_gates_decoder_op_ip.csv /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder_1000_1/sim_results/taxonomy_%s_%s_summary_gates_decoder_op_ip.csv' %(freq,volt))
-
-def check_log(log_sim):
-	fail = 1
-	no_of_prob = 0
-	for line in open('%s' %(log_sim)):
-		if "Probability of atleast one flip is" in line:
-			output_file.write('%s'%(line))
-			no_of_prob += 1
-	   		prob_flip=float(line.split(': ')[1])
-	#		print prob_flip
-			if prob_flip == 0.0:
-				fail = 0
-			else:
-				fail = 1
-	if fail == 0:
-		return 0
-	else:
-		if no_of_prob > 0:
-			return 1
+	if (just_checking_log_flag == 1):
+		if os.path.isfile('log_sim_%s_%s_%s' %(circuit_name,op_freq,op_volt)):
+			pass
 		else:
-			return 2
+			prob = 0.0
+			if op_volt == 1.0:
+				if op_freq >= 1000:
+					prob = 1.0
+			elif op_volt == 0.9:
+				if op_freq >= 100:
+					prob = 1.0
+			elif op_volt == 0.8:
+				if op_freq >= 10:
+					prob = 1.0
+			elif op_volt == 0.7:
+				if op_freq >= 1:
+					prob = 1.0
+			elif op_volt == 0.6:
+				if op_freq >= 0.1:
+					prob = 1.0
 
-######## Main program starts #########
-circuits = ['decoder']
-simulation = [500]
-op_cond_volt = 		[1,		0.9,		0.8,		0.7,		0.6,		0.5,		0.4,		0.3]
-op_cond_freq_dict = {	'decoder' : [3900,	3800,		3800,		3800,		3800,			3800,			3800,		3800],
-						'c880' : [1843,	904,		595,		131,		29,			4,			0.563,		0.053],
-						'c1355': [1622,	807,		607,		186,		30,			4,			0.375,		0.03],
-						'c1908': [2000,	900,		700,		200,		50,			5,			0.6,		0.06]}
+			using_logger.write_to_log1('%s : Creating log for %s simulations at voltage = %s, frequency = %s, current = %s'\
+				%(circuit_name,no_of_sim,op_volt,op_freq,inj_curr))
+			os.system('echo "Probability of atleast one flip is: %s" > log_sim_%s_%s_%s' %(prob,circuit_name,op_freq,op_volt))
+			os.system('echo "Probability of atleast one flip is: %s" >> log_sim_%s_%s_%s' %(prob,circuit_name,op_freq,op_volt))
+	else:	
+		if (circuit_name.startswith('c')):
+			"""circuit to be simulated is ISCAS circuit"""
+			using_logger.write_to_log1('%s : Running %s simulations at voltage = %s, frequency = %s, current = %s'\
+				%(circuit_name,no_of_sim,op_volt,op_freq,inj_curr))
+			os.system('python python_utility2_hspice_2cycles_time0_65.py -m %s_clk_ipFF -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group %s --clk %s --volt %s --curr %s --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts >/dev/null 2&>log_sim_%s_%s_%s' %(circuit_name,circuit_name,circuit_name,no_of_sim,group,op_freq,op_volt,inj_curr,circuit_name,op_freq,op_volt))
+		else:	
+			"""circuit to be simulated is decoder"""
+			using_logger.write_to_log1('%s : Running %s simulations at voltage = %s, frequency = %s, current = %s'\
+				%(circuit_name,no_of_sim,op_volt,op_freq,inj_curr))
+			os.system('python python_utility2_hspice_2cycles_time0_65.py -m %s_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group %s --clk %s --volt %s --curr %s --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts >/dev/null 2&>log_sim_%s_%s_%s' %(circuit_name,circuit_name,circuit_name,no_of_sim,group,op_freq,op_volt,inj_curr,circuit_name,op_freq,op_volt))
 
-parser = OptionParser("It takes arguments\n")
+def check_log(simulation_log,using_logger,delete_log=0):
+	"""Finds whether the probability of flip is 0 in the log"""
+	fail = 1
+	prob_sentences_found = 0
+	if os.path.isfile(simulation_log):
+		for line in open('%s' %(simulation_log)):
+			if "Probability of atleast one flip is" in line:
+				using_logger.write_to_log1('%s'%(line))
+				prob_sentences_found += 1
+		   		prob_flip=float(line.split(': ')[1])
+				#print prob_flip
+				if prob_flip == 0.0:
+					fail = 0
+				#	print "passed"
+				else:
+					fail = 1
+				#	print "failed"
+					break
+		if delete_log == 1:
+			os.system('rm -f %s'%(simulation_log))
+
+		if fail == 0 and prob_sentences_found > 0:
+			return ("%s passed"%(simulation_log))
+		elif prob_sentences_found == 0:
+			return ("%s log improper"%(simulation_log))
+		else:
+			return ("%s failed, %s probability statements found"%(simulation_log,prob_sentences_found))
+	else:
+		return ("%s not found"%(simulation_log))
+
+class circuit(object):
+	def __init__(self,name,op_voltages,max_op_freq):
+		circuit.name = name
+		circuit.op_voltages = op_voltages
+		circuit.max_op_freq = max_op_freq
+		circuit.op_frequencies = {}
+
+def set_resolution(freq,resolution):
+	while freq <= resolution:
+		resolution = round(resolution/10,6)
+	return resolution
+	
+def sanity_check(no_of_sim_arr,group,circuit,resolution,using_logger,inj_curr=0.0):
+	op_freq = circuit.max_op_freq
+	for op_volt in circuit.op_voltages:
+		for no_of_sim in no_of_sim_arr:
+			quit = 0
+			while quit == 0:
+				run_sim(circuit.name,op_volt,op_freq,no_of_sim,group,using_logger,inj_curr,just_checking_log_flag=0)	
+				log_stat = check_log('log_sim_%s_%s_%s'%(circuit.name,op_freq,op_volt),using_logger)
+				using_logger.write_to_log1(log_stat)
+				if log_stat.endswith("passed"):
+					using_logger.write_to_log1("Detected passed")
+					quit = 1
+				elif log_stat.endswith("improper"):
+					using_logger.write_to_log1("Detected wrong log.. Re-running")
+				else:
+					using_logger.write_to_log1("Detected failed")
+					resolution = set_resolution(op_freq,resolution)
+					using_logger.write_to_log1("Resolution = %s"%(resolution))
+					op_freq = op_freq - resolution
+					op_freq = round(op_freq,6)
+					using_logger.write_to_log1("New freq = %s"%(op_freq))
+		using_logger.write_to_log2("%s passed for volt = %s freq = %s"%(circuit.name,op_volt,op_freq))
+		circuit.op_frequencies[op_volt] = op_freq	
+					
+def simulate(no_of_sim,group,circuit,using_logger,inj_curr=0.0):
+	curr_factor = 1
+	for op_volt in circuit.op_voltages:
+		inj_curr = op_volt*curr_factor*inj_curr
+		run_sim(circuit.name,op_volt,circuit.op_frequencies[op_volt],no_of_sim,group,using_logger,inj_curr)
+		save_sim_results(circuit.name,op_volt,circuit.op_frequencies[op_volt])
+
+def save_sim_results(circuit,op_volt,glitch_curr):
+	results_dir = "../../sim_%s/spice_results"%(circuit)
+	new_results_dir = "../../sim_%s/results_sim"%(circuit) 
+	volt_results_dir = "%s/volt_%s"%(new_results_dir,op_volt)
+	if not os.path.exists(new_results_dir):
+		os.makedirs(new_results_dir)	
+	if not os.path.exists(volt_results_dir):
+		os.makedirs(volt_results_dir)	
+	os.system('mv %s/taxonomy_summary_FFs* %s/%s_taxonomy_summary_FFs_%s_%s.csv'%(results_dir,volt_results_dir,glitch_curr,circuit,op_volt))
+	os.system('mv %s/taxonomy_summary_gates* %s/%s_taxonomy_summary_gates_%s_%s.csv'%(results_dir,volt_results_dir,glitch_curr,circuit,op_volt))
+
+def csv_to_dictionary(csv_file):
+	ret_dict = {}
+	with open(csv_file, 'rb') as csvfile:
+		readfile = csv.reader(csvfile, delimiter=',')
+		for row in readfile:
+			ret_dict[row[0]] = row[1:]
+	return ret_dict
+
+######## Main program #########
+parser = OptionParser("This utility takes mode as an argument\n")
 
 parser.add_option("-m", "--mod",dest='mode', help='mode can be either "sim" or "sanity"')
-
 (options, args) = parser.parse_args()
-
-
 mode=options.mode
-output_file=sys.stdout
-if mode == 'sanity':
-	output_file.write('entered sanity\n')
-	for ckt_n in range(len(circuits)):
-		ckt = circuits[ckt_n]
-		op_cond_freq = op_cond_freq_dict[ckt]
-		op_cond_min_freq = [3000,	0,			0,			0,			0,			0,			0,			0]
-		output_file.write('simulating for %s\n' %(ckt))
-		for n in range(len(simulation)):
-			no_of_sim = simulation[n]
-			for i in range(len(op_cond_volt)):
-				freq = op_cond_freq[i]
-				volt = op_cond_volt[i]
-				curr = 0.0
-				resolution = 100
-				exit = 0
-				inval_sim = 0
-				while exit == 0:
-					output_file.write('%s : Running %s simulations at voltage = %s, frequency = %s, current = %s\n' %(ckt,no_of_sim,volt,freq,curr))
-					run_sim(ckt,volt,freq,no_of_sim,curr)
-					output_file.write('Created log_sim_%s_%s_%s\n' %(ckt,freq,volt))
-					log_sim = 'log_sim_%s_%s_%s' %(ckt,freq,volt)
-					err_stat = check_log(log_sim)
-					if err_stat == 0:				#passed
-						output_file.write('%s passed\n' %(log_sim))
-						op_cond_min_freq[i] = freq
-						inval_sim = 0
-					elif err_stat == 1:				#failed
-						output_file.write('%s failed\n' %(log_sim))
-						op_cond_freq[i] = freq
-						inval_sim = 0
-					else:
-						output_file.write('%s invalid\n' %(log_sim))
-						inval_sim += 1
-						if inval_sim == 3:
-							exit = 1
-					if op_cond_freq[i] <= resolution:
-						resolution = float(resolution)/10
-						output_file.write('resolution changed to %s\n' %(resolution))
-						op_cond_min_freq[i] = float(op_cond_min_freq[i])
-						op_cond_freq[i] = float(op_cond_freq[i])
-					if inval_sim == 0:
-						if (op_cond_freq[i] - op_cond_min_freq[i]) > resolution:
-							if no_of_sim < 100:
-								if resolution >= 1:
-									freq = int((op_cond_freq[i]+op_cond_min_freq[i])/2)
-								else:
-									freq = round((op_cond_freq[i]+op_cond_min_freq[i])/2, 3)
-							else:
-								freq = freq - resolution
-						else:
-							exit = 1
-					if exit == 1:
-						if i < (len(op_cond_volt)-1):
-							if op_cond_freq[i+1] > op_cond_min_freq[i] and op_cond_min_freq[i] > 0:
-								op_cond_freq[i+1] = op_cond_min_freq[i]
-		for i in range(len(op_cond_volt)):
-			output_file.write2('%s passed for Voltage = %s, Frequency = %s\n' %(ckt,op_cond_volt[i],op_cond_min_freq[i]))
-		
-		output_file.write2('\n')
-		os.system('rm log_sim_%s_*'%(ckt))		
-	
-else:
-	mode = 'sim'
-	print "Simulating"
-	curr = 0.4
-	no_of_sim = 3000
+
+using_logger = log_file_manager()
+using_logger.clean_logs()
+
+op_voltages = ['1.0','0.9','0.8','0.7','0.6','0.5','0.4']
+#op_voltages = ['1.0']
+no_of_sim_arr = [5,10,100]
+group = 4
+resolution = 100.0
+circuits = ['decoder','c1355','c1908','c432','c499','c880']
+for ckt in circuits:
+	using_logger.open_logs()
+	sim_ckt = circuit(ckt,op_voltages,1000.0)
+	if mode == 'sanity':
+		using_logger.write_to_log2("%s :"%(sim_ckt.name))
+		sanity_check(no_of_sim_arr,group,sim_ckt,resolution,using_logger,inj_curr=0.0)
+	else:
+		no_of_sim = 3000
+		using_logger.write_to_log2("%s :"%(sim_ckt.name))
+		current_dict = csv_to_dictionary('input_files/current.csv')
+		ckt_dict = csv_to_dictionary('input_files/%s.csv'%(ckt))
+
+		for op_volt in sim_ckt.op_voltages:
+			for glitch_current in current_dict[op_volt]:
+#				using_logger.write_to_log2("%s : %s MHz with %s mA"%(op_volt,ckt_dict[op_volt][0],glitch_current))
+				run_sim(sim_ckt.name,op_volt,ckt_dict[op_volt][0],no_of_sim,group,using_logger,glitch_current)
+				save_sim_results(sim_ckt.name,op_volt,glitch_current)
+
+		using_logger.close_logs()
