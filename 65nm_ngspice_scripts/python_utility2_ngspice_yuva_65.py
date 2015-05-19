@@ -38,19 +38,21 @@ parser.add_option("-d", "--design", dest="design_folder",help="Enter the name of
 parser.add_option("-t", "--tech",dest='tech', help='Enter the technology node-for eg., For 180nm, enter 180')
 parser.add_option("--group",dest='group',  help='Enter the number of spice decks to be simulated at a time. For eg., if -n option is 10000, and say we want to run 100 at a time, then enter 100')
 parser.add_option("-c", "--clk",dest='clk', help='Enter the clk freq in MHz')
+parser.add_option("-a", "--curr",dest='curr', help='Enter the peak current for glitch')
 
 
 (options, args) = parser.parse_args()
 
 
 module=options.module
+volt=options.volt
 num=options.num
 path=options.path
-volt=options.volt
 design_folder=options.design_folder
 tech=options.tech
 num_at_a_time=options.group
 clk=(options.clk)
+curr=(options.curr)
 scripts_path=options.scripts_path
 
 start_loop=1
@@ -311,7 +313,7 @@ for loop in range(start_loop, (num_of_loops+1)):
 		frand.write("%d, %d, %d,%e\n" %(rand_gate,rand_drain,rand_clk,rand_glitch))
 
 		#deckgen.pl will need to be remotely executed through python_repeat_deckgen.py multiple number of times
-		os.system('perl %s/perl_deckgen_65.pl -s %s/reference_spice.sp  -r %s/%s_reference_out/tool_reference_out.txt -n %d -m %s -f %s  -o %s -g %s -d %s -c %s -i %s' %(scripts_path,path,path,module,loop_var,module,path,loop,rand_gate,rand_drain,rand_clk,rand_glitch))
+		os.system('perl %s/perl_deckgen_65.pl -s %s/reference_spice.sp  -r %s/%s_reference_out/tool_reference_out.txt -n %d -m %s -f %s  -o %s -g %s -d %s -c %s -i %s -v %s --clk %s --curr %s' %(scripts_path,path,path,module,loop_var,module,path,loop,rand_gate,rand_drain,rand_clk,rand_glitch,volt,clk,curr))
 		
 ##################Script repeat_deckgen copied ends here####################################
 	

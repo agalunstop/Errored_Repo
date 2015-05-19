@@ -10,7 +10,7 @@
 
 
 #Modifications to the script:
-#added -v option to pass voltage from top level to all scripts
+#added -v option to pass voltage from top level to all scripts -- sonal
 #The .ic for the different types of flipf-flops is currently being done manually in the reference.sp file. The flip-flops and its corresponding initialisation nodes are written in the help of NetLstfrmt.pl script
 
 #Absolute paths introduced everywhere in the script, so that they can be run from one directory and no need of duplicating the scripts in all directories: June 25 2014
@@ -94,11 +94,11 @@ script=options.script
 scripts_path=options.scripts_path
 
 #Example usage: python python1_read_RTL_syn_pnr.py -f decoder.vhd -m decoder_behav_pnr -clk 900
+'''
 os.system('python python_read_RTL_syn_pnr_65.py -f %s -m %s -c %s -p %s' %(rtl,module,clkfreq,main_path))
 
 print('Done 1st script rtl+pnr\n')
 #time.sleep(5)
-
 
 
 os.system('perl perl_write_simfile_65.pl -v %s/pnr/op_data/%s_final.v -m %s -p %s' %(main_path,module,module,main_path))
@@ -132,12 +132,13 @@ os.system('perl perl_glitchLibGen_65.pl -p %s -i CORE65GPSVT_selected_lib_vg.sp'
 print "***Created glitch library..\n"
 time.sleep(5)
 
+'''
 
 
 ##Generate a template simulatable spice netlist from the dspf file generated after pnr. This would include all .ic, Voltage sources, meas, tran, control, param etc
 #NetlistFormat.pl
 #perl NetlstFrmt.pl -v decoder_behav_pnr_modelsim.v -s pnr/op_data/decoder_behav_pnr_final.dspf -l glitch_osu018_stdcells_correct_allcells.sp -c 1e9 -t 180 -m decoder_behav_pnr
-os.system('perl perl_spice_netlist_format_noR_65.pl -v %s/%s_modelsim.v  -s %s/pnr/op_data/%s_final_new.dspf  -c %s -t %s -m %s  -p %s' %(main_path,module,main_path,module,clkfreq,techn, module,main_path))
+os.system('perl perl_spice_netlist_format_noR_65.pl -v %s/%s_modelsim.v  -s %s/pnr/op_data/%s_final_new.dspf  -c %s -t %s -m %s  -p %s -o %s' %(main_path,module,main_path,module,clkfreq,techn, module,main_path,volt))
 print "***Done modifying the spice file to make it simulatable. File available in current directory reference_spice.sp\n"
 time.sleep(5)
 os.system('python python_create_jobscript_65.py -m %s -p %s -d %s -t %s -n %s -v %s --group %s --clk %s --proc_node %s --ppn %s --days %s --hrs %s --mins %s --script %s --path_here %s --scripts_path %s' %(module,extl_folder,design_folder,techn,num,volt,group,clkfreq,nodes,ppn,days,hrs,mins,script,main_path,scripts_path))

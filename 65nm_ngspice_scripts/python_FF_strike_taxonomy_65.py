@@ -526,7 +526,7 @@ if (os.path.isdir('%s/spice_results' %(path))):
 	       ]))
 	elements.append(t1)
 
-	print "Elements in table is: ",elements
+	#print "Elements in table is: ",elements
 	print "\n**Completed executing the gate_strike_taxonomy script***\n"
 	print "%s/spice_results/taxonomy_report_FFs_%s.pdf has the results." %(path,module)
 	doc1.build(elements)

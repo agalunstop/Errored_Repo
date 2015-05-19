@@ -19,7 +19,7 @@ def drain_selection(path,rand_gate_name_in):
 	drain_areas=[]
 
 	for i in range(len(data)):
-		print "data is %s" %data[i]
+	#	print "data is %s" %data[i]
 		rand_gate_name=rand_gate_name_in+"_" #rand_gate_name=rand_gate_name+"_" will introduce recursively many '_'
 		#print "Gate name is",rand_gate_name
 		#time.sleep(3)

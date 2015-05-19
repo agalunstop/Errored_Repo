@@ -160,8 +160,8 @@ os.system('rm -rf %s/spice_decks_*' %path)
 
 frand = open('%s/random_number_histogram.txt' %(path), 'w')
 
-seed = random.randint(0, sys.maxint)
-#seed=8740245778426848296
+#seed = random.randint(0, sys.maxint)
+seed=5190190847031440005
 print "seed is: ", seed
 frand.write("Seed:%d\n" %seed)
 

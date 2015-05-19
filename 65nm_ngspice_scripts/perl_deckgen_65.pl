@@ -101,6 +101,9 @@ END
 
 GetOptions( "s|spice=s"=>\$spc,
 	    "r|ref=s"=>\$ref,
+	    "v|volt=s"=>\$voltage,
+	    "z|clk=s"=>\$clk,
+	    "a|curr=s"=>\$current,
 	    "n|num=s"=>\$deck_num,
 	    "m|module=s"=>\$module,
 	    "f|folder=s"=>\$folder,
@@ -146,7 +149,7 @@ $minus3_cycle="";
 $minus4_cycle="";
 $minus5_cycle="";
 
-$sim_time=0;
+#$sim_time=0;
 $active=1;
 $glitch_location=0;
 $prnt=0;
@@ -184,15 +187,15 @@ while(<SPC>)
 	     
 	    }
        }
-    if($_=~m/tran 10ps (.*)s/i)
-       {
-        $sim_time=$1; #print "simulation time = $1\n";
-       }
-    if($_=~m/Vvdd vdd 0 (.*)/i)
-       {
-        chomp($vdd=$1);
-       # print "Vdd for this technology is $vdd \n";
-       }
+#    if($_=~m/tran 10ps (.*)s/i)
+#       {
+#        $sim_time=$1; #print "simulation time = $1\n";
+#       }
+#    if($_=~m/Vvdd vdd 0 (.*)/i)
+#       {
+#        chomp($vdd=$1);
+#       # print "Vdd for this technology is $vdd \n";
+#       }
     if($_=~m/NUMBER OF OUTPUT PINS = (.*)/)
        {
          chomp($num_opt=$1)
@@ -301,7 +304,54 @@ while(<SPC>)
 @cycle_minus5=split(" ",$minus5_cycle);
 
 #selecting a random glitch location (between 1.2 clock_period to 1.5 clock period)
-$clk_period=$sim_time/2.5;
+#$clk_period=$sim_time/2.5;
+##default values of $voltage and $injected_curr
+
+if ($voltage=="") {$voltage=1.0};
+if ($current=="") {$current=0};
+if ($clk=="") {$clk=1000};
+#if($tech==180)
+#  {
+#    if($volt=="") {$vdd=1.8;}
+#    else {$vdd=$volt;}
+#    $idd=2.2;
+#  }
+#elsif($tech==130)
+#  {
+#    if($volt=="") {$vdd=1.5;}
+#    else {$vdd=$volt;}
+#    $idd=1.8;
+#  }
+#elsif($tech==90)
+#  {
+#    if($volt=="") {$vdd=1.2;}
+#    else {$vdd=$volt;}
+#    $idd=1.5;
+#  }
+#elsif($tech==65)
+#  {
+#    if($volt=="") {$vdd=1.26;}
+#    else {$vdd=$volt;}
+#    $idd=0;
+#  }
+#elsif($tech==45)
+#  {
+#    if($volt=="") {$vdd=1.0;}
+#    else {$vdd=$volt;}
+#    $idd=1.0;
+#  }
+#elsif($tech==32)
+#  {
+#    if($volt=="") {$vdd=0.9;}
+#    else {$vdd=$volt;}
+#    $idd=0.8;
+#  }
+#elsif($tech==22)
+#  {
+#    if($volt=="") {$vdd=0.8;}
+#    else {$vdd=$volt;}
+#    $idd=0.6;
+#  }
 
 #Pick a random glitch location in the clk cycle
 #srand($seed);
@@ -309,6 +359,17 @@ $clk_period=$sim_time/2.5;
 $glitch_location=$rand_glitch;
 print "Random glitch point is at time $glitch_location \n"; 
 
+##calculating clk parameters
+$clk_period = (1/$clk)*(0.000001);
+
+$sim_time=3*$clk_period;#defining simulation time
+$fall_from=(2.5*$clk_period); #defining fall time window
+$fall_to= ($fall_from + 50e-12);
+
+$rise_from_2nd=(1.5*$clk_period); #defining fall time window
+$rise_to_2nd= ($rise_from_2nd + 50e-12);
+
+$vdd = $voltage;
 #creating the spice deck
 #`mkdir $folder/spice_decks_$outloop`;
 open(OPT,">$folder/spice_decks_$outloop/deck_$deck_num.sp")||die("unable to open file : $!");
@@ -331,21 +392,61 @@ while(<SPC>)
     $count++;
     $new=$_;
 #Substituting the random glitch location
-     if($_=~m/##glitch_location##/)
+     if($new=~m/##glitch_location##/)
         {
          $new='+rise_delay= '.$glitch_location."s\n";
 
         }
 #Substituting the deck number
-     if($_=~m/##deck_num##/)
+     if($new=~m/##deck_num##/)
         {
-          $new=$_;
           $new=~s/##deck_num##/$deck_num/;
         }
+#Substituting the operating voltage
+		if($new=~m/##op_voltage##/)
+		{
+			$new=~s/##op_voltage##/$voltage/;
+		}
+#Substituting the injected current
+		if($new=~m/##injected_curr##/)
+		{
+			$new=~s/##injected_curr##/$current/;
+		}
+#Substituting the clk_period
+		if($new=~m/##clk_period##/)
+		{
+			$new=~s/##clk_period##/$clk/;
+		}
+#Substituting the sim_time
+		if($new=~m/##sim_time##/)
+		{
+			$new=~s/##sim_time##/$sim_time/g;
+		}
+#Substituting the fall_from
+		if($new=~m/##fall_from##/)
+		{
+			$new=~s/##fall_from##/$fall_from/g;
+		}
+#Substituting the fall_to
+		if($new=~m/##fall_to##/)
+		{
+			$new=~s/##fall_to##/$fall_to/g;
+		}
+#Substituting the rise_from_2nd
+		if($new=~m/##rise_from_2nd##/)
+		{
+			$new=~s/##rise_from_2nd##/$rise_from_2nd/g;
+		}
+#Substituting the rise_to_2nd
+		if($new=~m/##rise_to_2nd##/)
+		{
+			$new=~s/##rise_to_2nd##/$rise_to_2nd/g;
+		}
+
 #Substituting the reference values
-     if(($_=~m/PWL\(/))# ||($_=~m/\.ic/)
+     if(($new=~m/PWL\(/))# ||($new=~m/\.ic/)
         {
-	   ($temp1,$pinname)=split(" ",$_);
+	   ($temp1,$pinname)=split(" ",$new);
            #print $pinname."\n";
            @temp=split(" ",$header);
            foreach $index( 0 .. $#temp)
@@ -361,7 +462,7 @@ while(<SPC>)
 		      $ref_minus3=$cycle_minus3[$index]*$vdd;
 		      $ref_minus4=$cycle_minus4[$index]*$vdd;
 
-                      $new=$_;
+#                      $new=$_;
                       $new=~s/##$pinname\_reference_1##/$ref1/g;
 		      $new=~s/##$pinname\_reference_2##/$ref2/g;
 		      $new=~s/##$pinname\_reference_minus1##/$ref_minus1/g;
@@ -377,9 +478,9 @@ while(<SPC>)
  
 
 #This part of the code is used
-if(($_=~m/\.ic/))
+if(($new=~m/\.ic/))
         {
-	   ($junk1,$temp1,$pinname)=split(" ",$_);
+	   ($junk1,$temp1,$pinname)=split(" ",$new);
            chomp($pinname);
            $pinname=~s/_reference_1.*//;
            $pinname=~s/\#\#//;
@@ -394,7 +495,7 @@ if(($_=~m/\.ic/))
                       $ref_1=$cycle1[$index]*$vdd;
      			$ref_1_neg= $vdd- ($cycle1[$index]*$vdd); #Inverted value
 
-                      $new=$_;
+#                      $new=$_;
                       $new=~s/##$pinname\_reference_1##/$ref_1/g;
                        $new=~s/##$pinname\_reference_1_neg##/$ref_1_neg/g;
 
