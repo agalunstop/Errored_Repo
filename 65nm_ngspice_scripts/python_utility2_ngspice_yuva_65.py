@@ -205,10 +205,8 @@ if os.path.isfile("%s/%s_reference_out/RTL_2nd_edge*.csv" %(path,module)):
 if os.path.isfile("%s/%s_reference_out/RTL_time0*.csv" %(path,module)):
 	print "****Removing the existing RTL_time0.csv file in folder %s_reference_out ****\n" %(module)
 	os.remove("%s/%s_reference_out/RTL_time0*.csv" %(path,module))
-
 #Fresh simulation
 for loop in range(start_loop, (num_of_loops+1)): 
-
 	print "Now, creating multiple spice decks in spice_decks folder in current directory on the remote machine\n"
 	
 	
@@ -311,7 +309,6 @@ for loop in range(start_loop, (num_of_loops+1)):
 		print "\nglitch within clk cycle= ",unif
 		print "\nRandom gate: %d\nRandom drain: %d\nRandom clock cycle:%d\nRandom glitch location:%e\n " %(rand_gate,rand_drain,rand_clk,rand_glitch)
 		frand.write("%d, %d, %d,%e\n" %(rand_gate,rand_drain,rand_clk,rand_glitch))
-
 		#deckgen.pl will need to be remotely executed through python_repeat_deckgen.py multiple number of times
 		os.system('perl %s/perl_deckgen_65.pl -s %s/reference_spice.sp  -r %s/%s_reference_out/tool_reference_out.txt -n %d -m %s -f %s  -o %s -g %s -d %s -c %s -i %s -v %s --clk %s --curr %s' %(scripts_path,path,path,module,loop_var,module,path,loop,rand_gate,rand_drain,rand_clk,rand_glitch,volt,clk,curr))
 		
@@ -322,10 +319,8 @@ for loop in range(start_loop, (num_of_loops+1)):
 	#os.system ('python python_hspice_mod_check_ic.py -p %s -n %s -d %s -o %d -c %s' %(path,num_at_a_time,design_folder,loop,scripts_dir))
 	
 	#os.system('python python_hspice_combine_csv_results.py -n %s -d %s -o %d -p %s' %(num_at_a_time,design_folder,loop,path))
-	
 	print "Running GNU Parallel and ngspice on the created decks\n"
 	os.system('python %s/python_GNUparallel_ngspice_yuva_65.py -n %s -d %s -o %s -p %s' %(scripts_path,num_at_a_time,design_folder,loop,path))
-	
 	seed_new= int(random.randrange(100000)*random.random())  #Used by compare script to backup random decks
 	#seed_new=seed*loop
 	print "New seed every outer loop is ", seed_new
@@ -348,11 +343,11 @@ for loop in range(start_loop, (num_of_loops+1)):
 #########################################################
 #Comment this out to see the decks and the result files it generates. 	
 
-	spice_dir = '%s/spice_decks_%s' %(path,loop)
-
-	
-	if os.path.exists(spice_dir):
-		shutil.rmtree(spice_dir)
+#	spice_dir = '%s/spice_decks_%s' %(path,loop)
+#
+#	
+#	if os.path.exists(spice_dir):
+#		shutil.rmtree(spice_dir)
 
 
 ########################################End of loop########################################################

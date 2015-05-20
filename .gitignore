@@ -6,3 +6,4 @@ log_*
 result_*
 *.log
 temp
+*.pyc

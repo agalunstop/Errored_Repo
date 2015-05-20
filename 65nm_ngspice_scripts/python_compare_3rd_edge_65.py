@@ -91,6 +91,7 @@ frtl = open('%s/%s_reference_out/RTL_%d.csv' %(path,module,int(outloop)), 'rb')
 fout = open('%s/spice_results/spice_rtl_difference_3rd_edge_%d.csv' %(path,int(outloop)), 'wb')
 
 
+
 reader = csv.reader(f)
 reader_rtl = csv.reader(frtl)
 writer = csv.writer(fout)
@@ -199,7 +200,7 @@ for r in range(len(headers_rtl)):
 				#print "\nrtl is:\n",rt[0]
 	
 				for num_rows in range(0,int(num)): # 10 rows. This will be a user input: total num
-						
+					
 					spice_val=sp[num_rows]
 					if rt[num_rows] == '1': 
 						rtl_val = vdd_val  #This will have to depend on the techn node
@@ -210,7 +211,6 @@ for r in range(len(headers_rtl)):
 		
 		
 					ab=abs(float(spice_val) - float(rtl_val))
-					#print "\ndiff is\n",ab
 					#print "\nab is\n", ab
 					if ab <= 0.2*float(vdd_val): #This will have to depend on the techn node
 						k.append('0')

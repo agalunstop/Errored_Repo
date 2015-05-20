@@ -18,8 +18,8 @@
 #cd $PBS_O_WORKDIR 
 ###PBS -e /home/external/iitb/sonalg/Fault_Tolerance/sim_65/sim_decoder_380_0.7_yuva/error.txt
 ###PBS -o /home/external/iitb/sonalg/Fault_Tolerance/sim_65/sim_decoder_380_0.7_yuva/outfile.txt
-python python_utility2_ngspice_yuva_65.py -m decoder_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder -d sim_decoder -t 65 -n $1 -v 1.0 --group $2 --clk 3800.0 --curr 0.0 --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_ngspice_scripts 2>&1 | tee log_decoder
-#python python_utility2_hspice_2cycles_time0_65.py -m c880_clk_ipFF -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_c880 -d sim_c880 -t 65 -n 100 --group 3 --clk 1000.0 --volt 1.0 --curr 0 --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_hspice_scripts 2>&1 | tee log_c880
+#python python_utility2_ngspice_yuva_65.py -m decoder_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_decoder -d sim_decoder -t 65 -n $1 -v 1.0 --group $2 --clk 3800.0 --curr 0.0 --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_ngspice_scripts 2>&1 | tee log_decoder
+python python_utility2_ngspice_yuva_65.py -m c432_clk_ipFF -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_c432 -d sim_c432 -t 65 -n $1 --group $2 --clk 1000.0 --volt 1.0 --curr 0.0 --scripts_path /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/scripts/65nm_ngspice_scripts 2>&1 | tee log_c432
 
 # >/dev/null 2&>log_sim_decoder_380_0.7_yuva
 ###############################################################

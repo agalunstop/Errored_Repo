@@ -477,6 +477,7 @@ if (os.path.isdir('%s/spice_results' %(path))):
 
 	
 	###########################Write out the results into a table in a pdf############################
+	"""
 	from reportlab.lib import colors
 	from reportlab.lib.pagesizes import letter
 	from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -525,11 +526,11 @@ if (os.path.isdir('%s/spice_results' %(path))):
 				 ('BOX', (0,0), (-1,-1), 0.5, colors.black)  #(-1,-1) indicates the (last column, last row)
 	       ]))
 	elements.append(t1)
-
+	doc1.build(elements)
+	"""
 	#print "Elements in table is: ",elements
 	print "\n**Completed executing the gate_strike_taxonomy script***\n"
 	print "%s/spice_results/taxonomy_report_FFs_%s.pdf has the results." %(path,module)
-	doc1.build(elements)
 	
 
 

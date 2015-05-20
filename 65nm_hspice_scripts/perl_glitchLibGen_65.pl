@@ -205,13 +205,13 @@ while(<NET>)
 			if ($pmos =~ /NSVTGP/) #This is NMOS
 			{ 
 			#-ve current for the NMOS drain
-			$i="**NMOS current injection\nIcharge $drain 0 EXP (0 current_magnitude rise_delay rise_time_constant fall_delay fall_time_constant)\n\n";
+			$i="**NMOS current injection\nIcharge $drain 0 EXP (0 current_magnitude rise_delay rise_time_constant fall_delay fall_time_constant )\n\n";
 			print "We're talking about NMOS\n\n";
 			}
 			else
 			{
 			#+ve current for the PMOS drain with a current magnitude that is 1/3rd of that of NMOS
-			$i="**PMOS current injection\n.param current_magnitude_by3='current_magnitude/3'\nIcharge 0 $drain EXP (0 current_magnitude_by3 rise_delay rise_time_constant fall_delay fall_time_constant)\n\n";
+			$i="**PMOS current injection\n.param current_magnitude_by3='current_magnitude/3'\nIcharge 0 $drain EXP (0 current_magnitude_by3 rise_delay rise_time_constant fall_delay fall_time_constant )\n\n";
 			print "We're talking about PMOS\n\n";
 			}
 

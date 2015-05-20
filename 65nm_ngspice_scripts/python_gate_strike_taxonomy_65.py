@@ -607,7 +607,7 @@ def gate_strike_taxonomy(path,module):
 		fout.close()
 
 		###########################Write out the results into a table in a pdf############################
-
+		"""
 		from reportlab.lib import colors
 		from reportlab.lib.pagesizes import letter
 		from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -655,12 +655,11 @@ def gate_strike_taxonomy(path,module):
 		elements.append(t)
 
 		elements.append(Spacer(1,0.3*inch))
-
-
+		doc1.build(elements)
+		"""
 		#print "Elements in table is: ",elements
 		print "\n**Completed executing the gate_strike_taxonomy script***\n"
 		print "%s/spice_results/taxonomy_report_gates_%s.pdf has the results." %(path,module)
-		doc1.build(elements)
 
 		return (gate_glitch_captured_multiple,gate_glitch_captured)
 

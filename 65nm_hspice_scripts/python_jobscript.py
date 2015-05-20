@@ -85,16 +85,17 @@ def run_sim(circuit_name,op_volt,op_freq,no_of_sim,group,using_logger,inj_curr,j
 			"""circuit to be simulated is ISCAS circuit"""
 			using_logger.write_to_log1('%s : Running %s simulations at voltage = %s, frequency = %s, current = %s'\
 				%(circuit_name,no_of_sim,op_volt,op_freq,inj_curr))
-			os.system('python %s -m %s_clk_ipFF -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group %s --clk %s --volt %s --curr %s --scripts_path %s >/dev/null 2&>log_sim_%s_%s_%s_%s' %(script,circuit_name,circuit_name,circuit_name,no_of_sim,group,op_freq,op_volt,inj_curr,scripts_path,circuit_name,op_freq,op_volt,inj_curr))
+			os.system('python %s -m %s_clk_ipFF -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group %s --clk %s --volt %s --curr %s --scripts_path %s >/dev/null 2&>log_sim_%s_%s_%s' %(script,circuit_name,circuit_name,circuit_name,no_of_sim,group,op_freq,op_volt,inj_curr,scripts_path,circuit_name,op_freq,op_volt))
 		else:	
 			"""circuit to be simulated is decoder"""
 			using_logger.write_to_log1('%s : Running %s simulations at voltage = %s, frequency = %s, current = %s'\
 				%(circuit_name,no_of_sim,op_volt,op_freq,inj_curr))
-			os.system('python %s -m %s_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group %s --clk %s --volt %s --curr %s --scripts_path %s >/dev/null 2&>log_sim_%s_%s_%s_%s' %(script,circuit_name,circuit_name,circuit_name,no_of_sim,group,op_freq,op_volt,inj_curr,scripts_path,circuit_name,op_freq,op_volt,inj_curr))
+			os.system('python %s -m %s_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group %s --clk %s --volt %s --curr %s --scripts_path %s >/dev/null 2&>log_sim_%s_%s_%s' %(script,circuit_name,circuit_name,circuit_name,no_of_sim,group,op_freq,op_volt,inj_curr,scripts_path,circuit_name,op_freq,op_volt))
 
 def check_log(simulation_log,using_logger,delete_log=0):
 	"""Finds whether the probability of flip is 0 in the log"""
 	fail = 1
+	ngspice_fail = 0
 	prob_sentences_found = 0
 	if os.path.isfile(simulation_log):
 		for line in open('%s' %(simulation_log)):
@@ -110,12 +111,16 @@ def check_log(simulation_log,using_logger,delete_log=0):
 					fail = 1
 				#	print "failed"
 					break
+			elif "Error: ambiguous output redirect" in line:
+				ngspice_fail = 1	
 		if delete_log == 1:
 			os.system('rm -f %s'%(simulation_log))
 
 		if fail == 0 and prob_sentences_found > 0:
 			return ("%s passed"%(simulation_log))
 		elif prob_sentences_found == 0:
+			if ngspice_fail == 1:
+				return ("%s failed, ngspice output ambiguous found"%(simulation_log))
 			return ("%s log improper"%(simulation_log))
 		else:
 			return ("%s failed, %s probability statements found"%(simulation_log,prob_sentences_found))
@@ -128,15 +133,18 @@ class circuit(object):
 		circuit.op_voltages = op_voltages
 		circuit.max_op_freq = max_op_freq
 		circuit.op_frequencies = {}
+		circuit.max_op_freq_dict = {}
 
 def set_resolution(freq,resolution):
 	while freq <= resolution:
 		resolution = round(resolution/10,6)
 	return resolution
 	
-def sanity_check(no_of_sim_arr,group,circuit,resolution,using_logger,inj_curr=0.0):
+def sanity_check(no_of_sim_arr,group,circuit,resolution,using_logger,inj_curr=0.0,use_freq_array=0):
 	op_freq = circuit.max_op_freq
 	for op_volt in circuit.op_voltages:
+		if use_freq_array == 1:
+			op_freq = circuit.max_op_freq_dict[op_volt]
 		for no_of_sim in no_of_sim_arr:
 			quit = 0
 			while quit == 0:
@@ -148,6 +156,7 @@ def sanity_check(no_of_sim_arr,group,circuit,resolution,using_logger,inj_curr=0.
 					quit = 1
 				elif log_stat.endswith("improper"):
 					using_logger.write_to_log1("Detected wrong log.. Re-running")
+					quit = 1
 				else:
 					using_logger.write_to_log1("Detected failed")
 					resolution = set_resolution(op_freq,resolution)
@@ -185,38 +194,44 @@ def csv_to_dictionary(csv_file):
 	return ret_dict
 
 ######## Main program #########
-parser = OptionParser("This utility takes mode as an argument\n")
 
-parser.add_option("-m", "--mod",dest='mode', help='mode can be either "sim" or "sanity"')
-(options, args) = parser.parse_args()
-mode=options.mode
-
-using_logger = log_file_manager()
-using_logger.clean_logs()
-
-op_voltages = ['1.0','0.9','0.8','0.7','0.6','0.5','0.4']
-#op_voltages = ['1.0']
-no_of_sim_arr = [5,10,100]
-group = 8
-resolution = 100.0
-circuits = ['decoder']
-for ckt in circuits:
-	using_logger.open_logs()
-	sim_ckt = circuit(ckt,op_voltages,1000.0)
-	if mode == 'sanity':
-		using_logger.write_to_log2("%s :"%(sim_ckt.name))
-		sanity_check(no_of_sim_arr,group,sim_ckt,resolution,using_logger,inj_curr=0.0)
-	else:
-		no_of_sim = 32
-		using_logger.write_to_log2("%s :"%(sim_ckt.name))
-		current_dict = csv_to_dictionary('input_files/current.csv')
-		ckt_dict = csv_to_dictionary('input_files/%s.csv'%(ckt))
-
-		for op_volt in sim_ckt.op_voltages:
-			for glitch_current in current_dict[op_volt]:
-#				using_logger.write_to_log2("%s : %s MHz with %s mA"%(op_volt,ckt_dict[op_volt][0],glitch_current))
-#				run_sim(circuit_name,op_volt,op_freq,no_of_sim,group,using_logger,inj_curr,just_checking_log_flag=0,simulator='ngspice')
-				run_sim(sim_ckt.name,op_volt,ckt_dict[op_volt][0],no_of_sim,group,using_logger,glitch_current,just_checking_log_flag=0)
-				save_sim_results(sim_ckt.name,op_volt,glitch_current)
-
-		using_logger.close_logs()
+if __name__ == "__main__":
+	parser = OptionParser("This utility takes mode as an argument\n")
+	
+	parser.add_option("-m", "--mod",dest='mode', help='mode can be either "sim" or "sanity"')
+	(options, args) = parser.parse_args()
+	mode=options.mode
+	
+	using_logger = log_file_manager()
+	using_logger.clean_logs()
+	
+	op_voltages = ['1.0','0.9','0.8','0.7','0.6','0.5','0.4']
+	#op_voltages = ['1.0']
+	#no_of_sim_arr = [8,16,56,96]
+	no_of_sim_arr = [8]
+	group = 4
+	resolution = 100.0
+	circuits = ['decoder','c432','c499','c880','c1355','c1908']
+	for ckt in circuits:
+		using_logger.open_logs()
+		sim_ckt = circuit(ckt,op_voltages,4000.0)
+		if mode == 'sanity':
+			using_logger.write_to_log2("%s :"%(sim_ckt.name))
+			ckt_dict = csv_to_dictionary('input_files/%s.csv'%(ckt))
+			for key in ckt_dict.keys():
+				if not ckt_dict[key][0].isalpha():
+				#	print ckt_dict[key][0]
+					sim_ckt.max_op_freq_dict[key] = float(ckt_dict[key][0])
+			sanity_check(no_of_sim_arr,group,sim_ckt,resolution,using_logger,inj_curr=0.0,use_freq_array=1)
+		else:
+			no_of_sim = 32
+			using_logger.write_to_log2("%s :"%(sim_ckt.name))
+			current_dict = csv_to_dictionary('input_files/current.csv')
+			ckt_dict = csv_to_dictionary('input_files/%s.csv'%(ckt))
+	
+			for op_volt in sim_ckt.op_voltages:
+				for glitch_current in current_dict[op_volt]:
+					run_sim(sim_ckt.name,op_volt,ckt_dict[op_volt][0],no_of_sim,group,using_logger,glitch_current,just_checking_log_flag=0)
+					save_sim_results(sim_ckt.name,op_volt,glitch_current)
+	
+			using_logger.close_logs()

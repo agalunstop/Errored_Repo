@@ -377,6 +377,7 @@ print "\t\t\ !! SPICE DECK DIRECTORY CREATED !!\n";
 #writing into the new spice file
 $count=0;
 open(SPC,"$spc")||die("unable to open file : $!");
+print OPT "#!/bin/bash\n";
 while(<SPC>)
  {
     
