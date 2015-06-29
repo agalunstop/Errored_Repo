@@ -159,7 +159,9 @@ print "Done creating hspice decks\n"
 #os.chdir("%s/spice_decks_%d/" %(path,dir_num))
 #os.system("bash %s/spice_decks_%d/hspice.bat" %(path,dir_num)) 
 
+#os.system('python %s/python_GNUparallel_hspice_local_mc_65.py -n %d -d %s -o %d -p %s' %(scripts_dir,num,folder,dir_num,path))
 os.system('python %s/python_GNUparallel_hspice_local_mc_65.py -n %d -d %s -o %d -p %s' %(scripts_dir,num,folder,dir_num,path))
+
 print "Done running hspice\n"
 #time.sleep (3)
 os.chdir("../")
@@ -184,26 +186,31 @@ for j in range(0,num_of_files):
 num_of_csv=len(deck_num)
 #print "Len of Deck numbers", num_of_csv
 
-#time.sleep (3)
+#time.sleep(5)
 
 #Rename the csv output files
 for j in range(0,num_of_csv):
 	if os.path.exists('%s/spice_decks_%d/hspice_deck_%s.mt0.csv' %(path,dir_num,deck_num[j])):
 		print "Renaming %s/spice_decks_%d/hspice_deck_%s.mt0.csv" %(path,dir_num,deck_num[j])
 		os.rename('%s/spice_decks_%d/hspice_deck_%s.mt0.csv' %(path,dir_num,deck_num[j]),'%s/spice_decks_%d/glitch_report_outputs_%s.csv' %(path,dir_num,deck_num[j]))
+		sim_success = 1
+	else:
+		print 'Error: %s/spice_decks_%d/hspice_deck_%s.mt0.csv not found' %(path,dir_num,deck_num[j])
 
 
 #time.sleep (3)
 #Modify the output csv files.. remove the headers etc..
 for i in range(0,num_of_csv):
-	print "opening file %s/glitch_report_outputs_%s.csv to modify, remove headers"  %(path,deck_num[i])
-	f=open("%s/spice_decks_%d/glitch_report_outputs_%s.csv"  %(path,dir_num,deck_num[i]),'r')
-	lines=f.readlines()
-	f.close()
-	f=open("%s/spice_decks_%d/glitch_report_outputs_new1_%s.csv"  %(path,dir_num,deck_num[i]),'w')
-	f.writelines(lines[4]) #Write values, ignoring the first few lines
-	f.close()
-
+	if os.path.exists("%s/spice_decks_%d/glitch_report_outputs_%s.csv"%(path,dir_num,deck_num[i])):
+		print "opening file %s/spice_decks_%d/glitch_report_outputs_%s.csv"  %(path,dir_num,deck_num[i])
+		f=open("%s/spice_decks_%d/glitch_report_outputs_%s.csv"  %(path,dir_num,deck_num[i]),'r')
+		lines=f.readlines()
+		f.close()
+		f=open("%s/spice_decks_%d/glitch_report_outputs_new1_%s.csv"  %(path,dir_num,deck_num[i]),'w')
+		f.writelines(lines[4]) #Write values, ignoring the first few lines
+		f.close()
+			
+	
 
 	fr = open("%s/spice_decks_%d/glitch_report_outputs_new1_%s.csv" %(path,dir_num,deck_num[i]),"r")
 	fout = open("%s/spice_decks_%d/glitch_report_outputs_new2_%s.csv" %(path,dir_num,deck_num[i]),"w")

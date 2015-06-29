@@ -219,8 +219,9 @@ $idd = "##injected_curr##";
 print SIM "****Template spice file***"."\n\n";
 print SIM ".include ../glitch_CORE65GPSVT_selected_lib_vg.sp"."\n";
 print SIM '.include ../hspice_65nm_models/diodeiso_typ.txt'."\n";
-print SIM '.include ../hspice_65nm_models/ptm_nmos_65_no_X.txt'."\n";
-print SIM '.include ../hspice_65nm_models/ptm_pmos_65_no_X.txt'."\n";
+print SIM '.include ../ptm_cmos_models.pm'."\n";
+print SIM '*.include ../hspice_65nm_models/ptm_nmos_65_no_X.txt'."\n";
+print SIM '*.include ../hspice_65nm_models/ptm_pmos_65_no_X.txt'."\n";
 print "\t******Giltched version of the library file and technology file included in the spice file\n";
 $loop_var=0;
 
@@ -644,35 +645,19 @@ foreach $i(0 .. $#to_ff)
  	
  	$ff_obtained=$ff_types[$i];
  
-	if ($ff_obtained =~ m/(HS65_GS_DFPQX4)/)
+	if ($ff_obtained =~ m/(HS65_GS_DFPQX4|HS65_GS_DFPQX9)/)
 	{
 		if ($qreg==1)
-		{
+		{ #For ISCAS benchmarks
 		print "1. Obtained DFF name is $ff_obtained\n";
-		print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.AR64)= ##$new\_reference_1_neg##\n";
-		#print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.net0148:F65)= ##$new\_reference_1_neg##\n\n";
+		print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.net0148:F59)= ##$new\_reference_1_neg##\n";
+		print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.net0148:F65)= ##$new\_reference_1_neg##\n\n";
 		}
 		else
-		{
+		{ #For ITC benchmarks
 		print "1. Obtained DFF name is $ff_obtained\n";
-		print SIM ".ic v(X$module.X$to_ff[$i].AR64)= ##$new\_reference_1_neg##\n";
-		#print SIM ".ic v(X$module.X$to_ff[$i].net0148:F65)= ##$new\_reference_1_neg##\n\n";
-		}
-	}
-	
-	elsif ($ff_obtained =~ m/(HS65_GS_DFPQX9)/)
-	{
-		if ($qreg==1)
-		{
-		print "1. Obtained DFF name is $ff_obtained\n";
-		print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.AR50)= ##$new\_reference_1_neg##\n";
-		#print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.net0148:F65)= ##$new\_reference_1_neg##\n\n";
-		}
-		else
-		{
-		print "1. Obtained DFF name is $ff_obtained\n";
-		print SIM ".ic v(X$module.X$to_ff[$i].AR50)= ##$new\_reference_1_neg##\n";
-		#print SIM ".ic v(X$module.X$to_ff[$i].net0148:F65)= ##$new\_reference_1_neg##\n\n";
+		print SIM ".ic v(X$module.X$to_ff[$i].net0148:F59)= ##$new\_reference_1_neg##\n";
+		print SIM ".ic v(X$module.X$to_ff[$i].net0148:F65)= ##$new\_reference_1_neg##\n\n";
 		}
 	}
 	
@@ -682,12 +667,12 @@ foreach $i(0 .. $#to_ff)
 		if ($qreg==1)
 		{
 		print "2. Obtained DFF name is $ff_obtained\n";
-		print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.AR72)= ##$new\_reference_1_neg##\n\n";
+		print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.net0139:F125)= ##$new\_reference_1_neg##\n\n";
 		}
 		else
 		{
 		print "2. Obtained DFF name is $ff_obtained\n";
-		print SIM ".ic v(X$module.X$to_ff[$i].AR72)= ##$new\_reference_1_neg##\n\n";
+		print SIM ".ic v(X$module.X$to_ff[$i].net0139:F125)= ##$new\_reference_1_neg##\n\n";
 		}
 	
 	}
@@ -698,14 +683,14 @@ foreach $i(0 .. $#to_ff)
 		if ($qreg==1)
 		{
 		print "3. Obtained DFF name is $ff_obtained\n";
-		print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.AR165)= ##$new\_reference_1_neg##\n";
-		#print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.net0139:F95)= ##$new\_reference_1_neg##\n\n";
+		print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.net0139:F163)= ##$new\_reference_1_neg##\n";
+		print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.net0139:F95)= ##$new\_reference_1_neg##\n\n";
 		}
 		else
 		{
 		print "3. Obtained DFF name is $ff_obtained\n";
-		print SIM ".ic v(X$module.X$to_ff[$i].AR165)= ##$new\_reference_1_neg##\n";
-		#print SIM ".ic v(X$module.X$to_ff[$i].net0139:F95)= ##$new\_reference_1_neg##\n\n";
+		print SIM ".ic v(X$module.X$to_ff[$i].net0139:F163)= ##$new\_reference_1_neg##\n";
+		print SIM ".ic v(X$module.X$to_ff[$i].net0139:F95)= ##$new\_reference_1_neg##\n\n";
 		}
 		
 	}
@@ -715,12 +700,12 @@ foreach $i(0 .. $#to_ff)
 		if ($qreg==1)
 		{
 		print "4. Obtained DFF name is $ff_obtained\n";
-		print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.AR71)= ##$new\_reference_1_neg##\n\n";
+		print SIM ".ic v(X$module.X$to_ff[$i]\_q\_reg.net0238:F149)= ##$new\_reference_1_neg##\n\n";
 		}
 		else
 		{
 		print "4. Obtained DFF name is $ff_obtained\n";
-		print SIM ".ic v(X$module.X$to_ff[$i].AR71)= ##$new\_reference_1_neg##\n\n";
+		print SIM ".ic v(X$module.X$to_ff[$i].net0238:F149)= ##$new\_reference_1_neg##\n\n";
 		}
 		
 	}
@@ -935,7 +920,7 @@ foreach $i(0 .. $#to_ff)
 #Adding the control part
 print SIM "\n\n.control\n";
 print SIM "option rshunt = 1e12\noption itl4 = 100  reltol =0.005  trtol=8 pivtol=1e-11  abstol=1e-10 \n**option CONVERGE=-1\n";
-print SIM "tran 20ps ##sim_time##"."s\n\n";
+print SIM "tran ##time_resolution##s ##sim_time##"."s\n\n";
 print SIM "**Uncomment the following and run this spice file, if you need a waveform\n";
 print SIM "**write waveform_file.raw v(clk) v(input_dec_2_) v(input_dec_1_) v(input_dec_0_)  v(output_dec_3_) v(output_dec_1_) \n*+v.xdecoder_behav_pnr.xu11.vcharge#branch \n\n";
 

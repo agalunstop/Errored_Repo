@@ -2,9 +2,9 @@
 
 * PTM 65nm NMOS 
  
-.model  nmos  nmos  level = 54
+.model  nmos  nmos  level = 14
 
-+version = 4.0          binunit = 1            paramchk= 1            mobmod  = 0          
++version = 4.2.1        binunit = 1            paramchk= 1            mobmod  = 0          
 +capmod  = 2            igcmod  = 1            igbmod  = 1            geomod  = 1          
 +diomod  = 1            rdsmod  = 0            rbodymod= 1            rgatemod= 1          
 +permod  = 1            acnqsmod= 0            trnqsmod= 0          
@@ -44,7 +44,7 @@
 
 +xrcrg1  = 12           xrcrg2  = 5          
 +cgso    = 1.5e-010     cgdo    = 1.5e-010     cgbo    = 2.56e-011    cgdl    = 2.653e-10     
-+cgsl    = 2.653e-10    ckappas = 0.03         ckappad = 0.03         acde    = 1          
++cgsl    = 2.653e-10    ckappas = 0.03         ckappad = 0.03         acde    = 1.2         
 +moin    = 15           noff    = 0.9          voffcv  = 0.02       
 
 +kt1     = -0.11        kt1l    = 0            kt2     = 0.022        ute     = -1.5       
@@ -73,9 +73,9 @@
 
 * PTM 65nm PMOS
  
-.model  pmos  pmos  level = 54
+.model  pmos  pmos  level = 14
 
-+version = 4.0          binunit = 1            paramchk= 1            mobmod  = 0          
++version = 4.2.1          binunit = 1            paramchk= 1            mobmod  = 0          
 +capmod  = 2            igcmod  = 1            igbmod  = 1            geomod  = 1          
 +diomod  = 1            rdsmod  = 0            rbodymod= 1            rgatemod= 1          
 +permod  = 1            acnqsmod= 0            trnqsmod= 0          
@@ -115,7 +115,7 @@
          
 +xrcrg1  = 12           xrcrg2  = 5          
 +cgso    = 1.5e-010     cgdo    = 1.5e-010     cgbo    = 2.56e-011    cgdl    = 2.653e-10
-+cgsl    = 2.653e-10    ckappas = 0.03         ckappad = 0.03         acde    = 1
++cgsl    = 2.653e-10    ckappas = 0.03         ckappad = 0.03         acde    = 1.2
 +moin    = 15           noff    = 0.9          voffcv  = 0.02
 
 +kt1     = -0.11        kt1l    = 0            kt2     = 0.022        ute     = -1.5       

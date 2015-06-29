@@ -46,7 +46,7 @@ class log_file_manager(object):
 			os.remove(self.log_file2)
 #------------------------------------------------------
 
-def run_sim(circuit_name,op_volt,op_freq,no_of_sim,group,using_logger,inj_curr,just_checking_log_flag=0,simulator='ngspice'):
+def run_sim(circuit_name,op_volt,op_freq,no_of_sim,group,using_logger,inj_curr,just_checking_log_flag=0,simulator='hspice'):
 	time.sleep(1)
 	if simulator == 'ngspice':
 		script = 'python_utility2_ngspice_yuva_65.py'
@@ -85,12 +85,12 @@ def run_sim(circuit_name,op_volt,op_freq,no_of_sim,group,using_logger,inj_curr,j
 			"""circuit to be simulated is ISCAS circuit"""
 			using_logger.write_to_log1('%s : Running %s simulations at voltage = %s, frequency = %s, current = %s'\
 				%(circuit_name,no_of_sim,op_volt,op_freq,inj_curr))
-			os.system('python %s -m %s_clk_ipFF -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group %s --clk %s --volt %s --curr %s --scripts_path %s >/dev/null 2&>log_sim_%s_%s_%s' %(script,circuit_name,circuit_name,circuit_name,no_of_sim,group,op_freq,op_volt,inj_curr,scripts_path,circuit_name,op_freq,op_volt))
+			os.system('python %s -m %s_clk_ipFF -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group %s --clk %s --volt %s --curr %s --scripts_path %s >/dev/null 2&>log_sim_%s_%s_%s_%s' %(script,circuit_name,circuit_name,circuit_name,no_of_sim,group,op_freq,op_volt,inj_curr,scripts_path,circuit_name,op_freq,op_volt,inj_curr))
 		else:	
 			"""circuit to be simulated is decoder"""
 			using_logger.write_to_log1('%s : Running %s simulations at voltage = %s, frequency = %s, current = %s'\
 				%(circuit_name,no_of_sim,op_volt,op_freq,inj_curr))
-			os.system('python %s -m %s_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group %s --clk %s --volt %s --curr %s --scripts_path %s >/dev/null 2&>log_sim_%s_%s_%s' %(script,circuit_name,circuit_name,circuit_name,no_of_sim,group,op_freq,op_volt,inj_curr,scripts_path,circuit_name,op_freq,op_volt))
+			os.system('python %s -m %s_op_ip -p /home/users/guptasonal/Fault_Project/Simulation/sim_65nm/sim_%s -d sim_%s -t 65 -n %s --group %s --clk %s --volt %s --curr %s --scripts_path %s >/dev/null 2&>log_sim_%s_%s_%s_%s' %(script,circuit_name,circuit_name,circuit_name,no_of_sim,group,op_freq,op_volt,inj_curr,scripts_path,circuit_name,op_freq,op_volt,inj_curr))
 
 def check_log(simulation_log,using_logger,delete_log=0):
 	"""Finds whether the probability of flip is 0 in the log"""
@@ -149,7 +149,7 @@ def sanity_check(no_of_sim_arr,group,circuit,resolution,using_logger,inj_curr=0.
 			quit = 0
 			while quit == 0:
 				run_sim(circuit.name,op_volt,op_freq,no_of_sim,group,using_logger,inj_curr,just_checking_log_flag=0)	
-				log_stat = check_log('log_sim_%s_%s_%s'%(circuit.name,op_freq,op_volt),using_logger)
+				log_stat = check_log('log_sim_%s_%s_%s_%s'%(circuit.name,op_freq,op_volt,inj_curr),using_logger)
 				using_logger.write_to_log1(log_stat)
 				if log_stat.endswith("passed"):
 					using_logger.write_to_log1("Detected passed")
@@ -205,13 +205,14 @@ if __name__ == "__main__":
 	using_logger = log_file_manager()
 	using_logger.clean_logs()
 	
-	op_voltages = ['1.0','0.9','0.8','0.7','0.6','0.5','0.4']
-	#op_voltages = ['1.0']
+	#op_voltages = ['1.0','0.9','0.8','0.7','0.6','0.5','0.4']
+	op_voltages = ['0.5','0.4']
 	#no_of_sim_arr = [8,16,56,96]
 	no_of_sim_arr = [8]
 	group = 4
 	resolution = 100.0
-	circuits = ['decoder','c432','c499','c880','c1355','c1908']
+#	circuits = ['c880','c1355','c1908','decoder']
+	circuits = ['c432']
 	for ckt in circuits:
 		using_logger.open_logs()
 		sim_ckt = circuit(ckt,op_voltages,4000.0)
@@ -222,16 +223,20 @@ if __name__ == "__main__":
 				if not ckt_dict[key][0].isalpha():
 				#	print ckt_dict[key][0]
 					sim_ckt.max_op_freq_dict[key] = float(ckt_dict[key][0])
-			sanity_check(no_of_sim_arr,group,sim_ckt,resolution,using_logger,inj_curr=0.0,use_freq_array=1)
+			sanity_check(no_of_sim_arr,group,sim_ckt,resolution,using_logger,inj_curr=0.0,\
+				use_freq_array=1)
 		else:
-			no_of_sim = 32
+			no_of_sim = 5000
 			using_logger.write_to_log2("%s :"%(sim_ckt.name))
 			current_dict = csv_to_dictionary('input_files/current.csv')
 			ckt_dict = csv_to_dictionary('input_files/%s.csv'%(ckt))
 	
-			for op_volt in sim_ckt.op_voltages:
-				for glitch_current in current_dict[op_volt]:
-					run_sim(sim_ckt.name,op_volt,ckt_dict[op_volt][0],no_of_sim,group,using_logger,glitch_current,just_checking_log_flag=0)
+			for i in range(len(current_dict[current_dict.keys()[0]])):
+				for op_volt in sim_ckt.op_voltages:
+					glitch_current = current_dict[op_volt][i]
+					run_sim(sim_ckt.name,op_volt,ckt_dict[op_volt][0],no_of_sim,\
+						group,using_logger,glitch_current,just_checking_log_flag=0,\
+						simulator='hspice')
 					save_sim_results(sim_ckt.name,op_volt,glitch_current)
 	
 			using_logger.close_logs()

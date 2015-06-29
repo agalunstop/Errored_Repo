@@ -92,7 +92,6 @@ mins=options.mins
 script=options.script
 #Example usage: python python1_read_RTL_syn_pnr.py -f c880.vhd -m c880_behav_pnr -clk 900
 os.system('python python_read_RTL_syn_pnr_65.py -f %s -m %s -c %s -p %s' %(rtl,module,clkfreq,main_path))
-
 print('Done 1st script rtl+pnr\n')
 #time.sleep(5)
 #Example usage: perl perl2_outwrtr.pl -v pnr/op_data/c880_behav_pnr_final.v -m c880_behav_pnr

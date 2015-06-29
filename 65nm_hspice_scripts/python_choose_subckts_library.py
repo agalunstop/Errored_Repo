@@ -94,9 +94,9 @@ for i in range(0,len(lib_data)):
 		for ii in range(0,len(subckt)):
 			#print "subckt element searching:",subckt[ii]
 		#Take each element of the subckt list, i.e., each library cell.Find a match in the library file
-			if (re.search(subckt[ii],current_line)):
+			if (re.search(r'%s\b'%(subckt[ii]),current_line)):		#This search string modified to match full word only
 				#Save the subckt definition to a new file
-				#print "match found searching:",subckt[ii]
+#				print "match found searching:",subckt[ii]
 				#print "inside if ,current line: %s, i=%d" %(current_line,i)
 				 #The for loop starts from the current line where the subckt instance was found in the previous step
 				for a in range(i,len(lib_data)):

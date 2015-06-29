@@ -363,6 +363,7 @@ print "Random glitch point is at time $glitch_location \n";
 $clk_period = (1/$clk)*(0.000001);
 
 $sim_time=3*$clk_period;#defining simulation time
+$time_resolution=($sim_time/40);
 $fall_from=(2.5*$clk_period); #defining fall time window
 $fall_to= ($fall_from + 50e-12);
 
@@ -372,6 +373,11 @@ $rise_to_2nd= ($rise_from_2nd + 50e-12);
 $vdd = $voltage;
 #creating the spice deck
 #`mkdir $folder/spice_decks_$outloop`;
+open(INIT,">$folder/spice_decks_$outloop/.spiceinit")||die("unable to open file : $!");
+print INIT "set SHELL=/bin/bash\n";
+print INIT "echo \$SHELL\n";
+close(INIT);
+
 open(OPT,">$folder/spice_decks_$outloop/deck_$deck_num.sp")||die("unable to open file : $!");
 print "\t\t\ !! SPICE DECK DIRECTORY CREATED !!\n";
 #writing into the new spice file
@@ -422,6 +428,11 @@ while(<SPC>)
 		if($new=~m/##sim_time##/)
 		{
 			$new=~s/##sim_time##/$sim_time/g;
+		}
+#Substituting the time_resolution
+		if($new=~m/##time_resolution##/)
+		{
+			$new=~s/##time_resolution##/$time_resolution/g;
 		}
 #Substituting the fall_from
 		if($new=~m/##fall_from##/)

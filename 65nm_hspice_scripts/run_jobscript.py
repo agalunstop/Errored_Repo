@@ -15,9 +15,9 @@ op_voltages = ['1.0','0.9','0.8','0.7','0.6','0.5','0.4']
 #op_voltages = ['1.0']
 #no_of_sim_arr = [8,16,56,96]
 no_of_sim_arr = [96]
-group = 8
+group = 4
 resolution = 100.0
-circuits = ['decoder']
+circuits = ['c432','decoder']
 for ckt in circuits:
 	using_logger = log_file_manager(log_file1="sanity_%s.log"%(ckt),log_file2="result_sanity_%s.log"%(ckt))
 	using_logger.clean_logs()
@@ -32,7 +32,7 @@ for ckt in circuits:
 				sim_ckt.max_op_freq_dict[key] = float(ckt_dict[key][0])
 		sanity_check(no_of_sim_arr,group,sim_ckt,resolution,using_logger,inj_curr=0.0,use_freq_array=1)
 	else:
-		no_of_sim = 32
+		no_of_sim = 4
 		using_logger.write_to_log2("%s :"%(sim_ckt.name))
 		current_dict = csv_to_dictionary('input_files/current.csv')
 		ckt_dict = csv_to_dictionary('input_files/%s.csv'%(ckt))

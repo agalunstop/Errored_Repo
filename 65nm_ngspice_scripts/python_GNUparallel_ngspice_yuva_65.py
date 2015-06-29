@@ -55,7 +55,6 @@ print "\n****Launching GNU Parallel to run ngspice simulations****\n"
 start= ((outloop-1)*num_spice) + 1  # ((1-1)*10) +1 =1  , ((2-1)*10) +1 =11
 end = (num_spice)*outloop  #(10*1) = 10, (10*2)=20
 
-
 os.system("seq %d %d| /usr/bin/parallel --progress -j +0 --sshloginfile %s/sshmachines.txt 'cd %s/spice_decks_%s; pwd; ngspice %s/spice_decks_%s/deck_{}.sp;pwd;' " % (start,end, path,path,outloop,path,outloop))
 
 
